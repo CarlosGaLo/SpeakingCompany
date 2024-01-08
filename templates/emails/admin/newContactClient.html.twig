@@ -1,0 +1,17 @@
+<h1>¡Hola {{ email.toName }}!</h1>
+
+<p>
+    Gracias por contactar con <a href="{{ url('home') }}">Más que palabras</a>. Hemos recibido tu mensaje y te contestaremos lo antes posible.
+</p>
+
+<p>
+    Esta es la información que nos has enviado:<br><br>
+    <strong>Nombre:</strong> {{ contact.name }}<br>
+    <strong>E-mail:</strong> {{ contact.email }}<br>
+    <strong>Teléfono:</strong> {{ contact.phone }}<br>
+    <strong>Mensaje:</strong> <br> {{ contact.remarks }}
+</p>
+
+<p>
+    <small>Este mensaje ha sido enviado de forma automática.</small>
+</p>

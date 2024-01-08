@@ -1,0 +1,143 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Contactos - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'contact', 'contactIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="/js/admin/contactList.js"></script>     
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Contactos
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Peticiones realizadas en la web
+            </small>
+        </h1>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if not total %}
+                <div class="row mb-1">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="alert alert-secondary bgc-default-l4 brc-secondary-m3" role="alert">
+                            <h5 class="alert-heading text-blue text-uppercase font-bolder">No hay contactos</h5>
+                            Los contactos son mensajes dejados por tus visitantes con preguntas o consultas sobre tus servicios e irán apareciendo aquí para que los revises.
+                        </div>                       
+                    </div>
+                </div>
+            {% else %}
+                <table id="simple-table" class="table table-bordered table-bordered-x table-hover text-dark-m2">
+                    <thead class="text-dark-m3 bgc-grey-l4">
+                        <tr>                        
+                            <th class="text-center pr-0">
+                                <span class="d-md-none"><i class="fa fa-plus text-sm"></i></span>
+                                <span class="d-none d-md-inline-block">Detalles</span>
+                            </th>
+                            <th>Nombre</th>
+                            <th>Mail</th>
+                            <th class="d-none d-sm-table-cell">Teléfono</th>
+                            <th class="d-none d-sm-table-cell"><i class="far fa-clock text-110 text-success-d1"></i> Fecha</th>
+                            <th class="d-none d-sm-table-cell">Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for contact in contacts %}
+                        <tr class="d-style bgc-h-default-l3">                        
+                            <td class="text-center pr-0">
+                                <div class="action-buttons">
+                                    <a href="#" data-toggle="collapse" data-target="#table-detail-{{ contact.id }}" class="text-success text-110 px-2 collapsed" title="Show Details" aria-expanded="false"><i class="fa fa-angle-double-down"></i> <span class="sr-only">Details</span></a>
+                                </div>
+                            </td>
+
+                            <td>{{ contact.name }}</td>
+                            <td><a href="mailto:{{ contact.email }}"><i class="d-block d-lg-none fa fa-envelope text-120"></i><span class="d-none d-lg-block">{{ contact.email }}</span></a></td>
+                            <td class="d-none d-sm-table-cell"><a href="tel:{{ contact.email }}"><i class="d-block d-lg-none fa fa-phone text-120"></i><span class="d-none d-lg-block">{{ contact.phone }}</span></a></td>
+                            <td class="d-none d-sm-table-cell">{{ contact.createDate|date('d/m/y') }} <small>{{ contact.createDate|date('H:i') }} h</small></td>
+                            <td class="d-none d-sm-table-cell">
+                                {% if contact.status %}
+                                    <span class="tooltipElement badge badge-sm bgc-success-l2 text-success-d3 border-1 brc-success-m2" data-toggle="tooltip" data-placement="top" data-original-title="{{ contact.reviewedBy.name }}">Revisado</span>
+                                {% else %}
+                                    <span class="badgeNew badge badge-sm bgc-danger-l2 text-danger-d3 border-1 brc-danger-m2">Nuevo</span>
+                                    <span class="tooltipElement badgeReviewed badge badge-sm bgc-success-l2 text-success-d3 border-1 brc-success-m2" style="display:none;" data-toggle="tooltip" data-placement="top" data-original-title="{{ app.user.name|default('Anónimo') }}">Revisado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-none d-lg-flex text-muted">                                                                    
+                                    {% if not contact.status %}<a href="#" data-url="{{ path('contact_review', {'id': contact.id}) }}" class="reviewContactBtn btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-success btn-a-outline-warning btn-text-success"><i class="fa fa-flag"></i></a>{% endif %}
+                                    <a href="#" data-url="{{ path('contact_delete', {'id': contact.id}) }}" class="deleteContactBtn btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-danger btn-a-outline-danger btn-text-danger" data-contact-name="{{ contact.firstname }}" data-contact-id="{{ contact.id }}"><i class="fa fa-trash-alt"></i></a>
+                                </div>
+
+                                <div class="dropdown d-inline-block d-lg-none dd-backdrop dd-backdrop-none-md">
+                                    <a href="#" class="btn btn-outline-warning btn-xs radius-round dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog text-110"></i></a>
+                                    <div class="dropdown-menu dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">                                                                                    
+                                            {% if not contact.status %}<a href="#" data-url="{{ path('contact_review', {'id': contact.id}) }}" class="reviewContactBtn dropdown-item"><i class="fa fa-flag text-success-d1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Marcar como revisado</a>{% endif %}
+                                            <a href="#" data-url="{{ path('contact_delete', {'id': contact.id}) }}" class="deleteContactBtn dropdown-item" data-contact-name="{{ contact.firstname }}" data-contact-id="{{ contact.id }}"><i class="fa fa-trash text-danger-m1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Eliminar</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr class="border-0 detail-row bgc-white">
+                            <td colspan="7" class="p-0 border-none">
+                                <div class="table-detail collapse" id="table-detail-{{ contact.id }}" style="">
+                                    <div class="row">
+                                        <div class="col-12 col-md-10 offset-md-1 p-4">
+                                            <div class="alert bgc-grey-l4 border-none border-l-4 brc-primary-m1 radius-0 mb-0">
+                                                <h6 class="text-primary-m2">
+                                                    <div class="d-block d-lg-none">
+                                                        {% if contact.status %}
+                                                            <span class="tooltipElement badge badge-sm bgc-success-l2 text-success-d3 border-1 brc-success-m2" data-toggle="tooltip" data-placement="top" data-original-title="{{ contact.reviewedBy.name }}">Revisado</span>
+                                                        {% else %}
+                                                            <span class="badgeNew badge badge-sm bgc-danger-l2 text-danger-d3 border-1 brc-danger-m2">Nuevo</span>
+                                                            <span class="tooltipElement badgeReviewed badge badge-sm bgc-success-l2 text-success-d3 border-1 brc-success-m2" style="display:none;" data-toggle="tooltip" data-placement="top" data-original-title="{{ app.user.name|default('Anónimo') }}">Revisado</span>
+                                                        {% endif %} | 
+                                                        <a href="mailto:{{ contact.email }}">{{ contact.email }}</a> |
+                                                        <a href="tel:{{ contact.email }}">{{ contact.phone }}</a>
+                                                    </div>
+                                                    <small>Desde la IP: {{ contact.ip }}</small>
+                                                </h6>
+                                                {{ contact.remarks|nl2br }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>  
+                        {% endfor %}
+                    <tfoot class="text-dark-m3 bgc-grey-l4">
+                        <tr>
+                            <th colspan="1" class="pr-0 border-0 d-none d-sm-table-cell">{{ total }} Contactos</th>                            
+                            <th colspan="6" class="border-0">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination nav-tabs-scroll is-scrollable mb-0 float-right">
+                                        {% if currPage > 1 %}<li class="page-item"><a class="page-link" href="{{ path('contact_index', {'page': (currPage - 1)}) }}">Anterior</a></li>{% endif %}
+                                        {% if not lastPage %}<li class="page-item"><a class="page-link" href="{{ path('contact_index', {'page': (currPage + 1)}) }}">Siguiente</a></li>{% endif %}
+                                    </ul>
+                                </nav>
+                            </th>
+                        </tr>
+                    </tfoot>
+                    </tbody>
+                </table>      
+            {% endif %}
+        </div>              
+    </div>            
+{% endblock %}

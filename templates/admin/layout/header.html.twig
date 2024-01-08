@@ -1,0 +1,122 @@
+<nav class="navbar navbar-expand-lg navbar-fixed navbar-blue">
+    <div class="navbar-inner">
+
+        <div class="navbar-intro justify-content-xl-between">
+
+            <button type="button" class="btn btn-burger burger-arrowed static collapsed ml-2 d-flex d-xl-none" data-toggle-mobile="sidebar" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+                <span class="bars"></span>
+            </button>
+
+            <a class="navbar-brand text-white" href="#">                
+                <img src="/images/logoMini.png" style="max-height: 52px;" title="{{ getCompany().name|default('Nonamed') }}">
+            </a>
+        </div>
+        
+        <button class="navbar-toggler ml-1 mr-2 px-1" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navbar menu">
+            <span class="pos-rel">
+                <img class="border-2 brc-white-tp1 radius-round" width="36" src="{{ app.user.getValidPhoto() }}" alt="{{ app.user.name|default('Anónimo') }}">
+                {%  if is_granted('ROLE_ADMIN') and contactNb %}<span class="bgc-warning radius-round border-2 brc-white p-1 position-tr mr-1px mt-1px"></span>{% endif %}
+            </span>
+        </button>
+
+       
+        <div class="navbar-menu collapse navbar-collapse navbar-backdrop" id="navbarMenu">
+
+            <div class="navbar-nav">
+                <ul class="nav">  
+                    {%  if is_granted('ROLE_ADMIN') and contactNb %}
+                    <li class="nav-item dropdown dropdown-mega">
+                        <a class="nav-link dropdown-toggle pl-lg-3 pr-lg-4" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-bell text-110 icon-animated-bell mr-lg-2"></i>
+
+                            <span class="d-inline-block d-lg-none ml-2">Contactos</span><!-- show only on mobile -->
+                            <span id="id-navbar-badge1" class="badge badge-sm badge-warning radius-round text-80 border-1 brc-white-tp5">{{ contactNb }}</span>
+
+                            <i class="caret fa fa-angle-left d-block d-lg-none"></i>
+                            <div class="dropdown-caret brc-white"></div>
+                        </a>
+                        
+                        <div class="shadow dropdown-menu dropdown-animated dropdown-sm p-0 bg-white brc-primary-m3 border-1 border-b-2">
+                            <ul class="nav nav-tabs nav-tabs-simple w-100 nav-justified dropdown-clickable border-b-1 brc-default-m4">
+                                <li class="nav-item">
+                                    <a class="d-style px-0 mx-0 py-3 nav-link active text-600 brc-blue-m2 text-grey-m3 bgc-h-blue-l4" data-toggle="tab" href="#navbar-notif-tab-1" role="tab">
+                                        <span class="d-active text-blue-m1 text-105">Contactos Pendientes</span>
+                                        <span class="d-n-active">Contactos</span>
+                                    </a>
+                                </li>                                
+                            </ul>
+
+
+                            <div class="tab-content tab-sliding p-0">
+
+                                <div class="tab-pane mh-none show active px-md-1 pt-1" id="navbar-notif-tab-1" role="tabpanel">
+
+                                    <div ace-scroll='{"ignore": "mobile", "height": 300, "smooth":true}'>
+                                        {% for contact in contactLast %}
+                                        <a href="{{ path('contact_index') }}#{{ contact.id }}" class="d-flex mb-0 border-0 list-group-item list-group-item-action btn-h-lighter-secondary">                                            
+                                            <div>
+                                                <span class="text-blue-m1 font-bolder">{{ contact.firstname }}:</span>
+                                                <span class="text-grey text-90">{{ contact.remarks|u.truncate(100, '...') }}</span>
+                                                <br />
+                                                <span class="text-grey-m2 text-85">
+                                                    <i class="far fa-clock"></i>
+                                                    {{ contact.createDate|aproxDate }}
+                                                </span>
+                                            </div>
+                                        </a>
+                                        {% if not loop.last %}<hr class="my-1px brc-grey-l3" />{% endif %}
+                                        {% endfor %}                                        
+                                    </div>
+
+                                    <hr class="my-1px brc-grey-l2 border-double" />
+                                    <a href="{{ path('contact_index') }}" class="mb-0 py-3 border-0 list-group-item text-blue-m2 text-uppercase text-center text-85 font-bold">
+                                        Ver todos los contactos
+                                        <i class="ml-2 fa fa-arrow-right text-muted"></i>
+                                    </a>
+
+                                </div>                                
+
+                            </div>
+                        </div>                        
+                    </li>
+                    {% endif %}
+                        
+                    <li class="nav-item dropdown order-first order-lg-last">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <img id="id-navbar-user-image" class="d-none d-lg-inline-block radius-round border-2 brc-white-tp1 mr-2" src="{{ app.user.getValidPhoto() }}" height="36" width="36" alt="{{ app.user.name|default('Anónimo') }}">
+                            <span class="d-inline-block d-lg-none d-xl-inline-block">
+                                <span class="text-90" id="id-user-welcome">Bienvenido,</span>
+                                <span class="nav-user-name">{{ app.user.name|default('Anónimo') }}</span>
+                            </span>
+
+                            <i class="caret fa fa-angle-down d-none d-xl-block"></i>
+                            <i class="caret fa fa-angle-left d-block d-lg-none"></i>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-caret dropdown-menu-right dropdown-animated brc-primary-m3">
+                            <div class="d-none d-lg-block d-xl-none">
+                                <div class="dropdown-header">
+                                    Bienvenido, {{ app.user.name|default('Anónimo') }}
+                                </div>
+                                <div class="dropdown-divider"></div>
+                            </div>
+
+                            <a class="dropdown-item btn btn-outline-grey btn-h-lighter-primary btn-a-lighter-primary" href="{% if is_granted('ROLE_ADMIN') %}{{ path('user_edit', {'id': app.user.id}) }}{% else %}{{ path('user_student_edit', {'id': app.user.id}) }}{% endif %}">
+                                <i class="fa fa-user text-primary-m1 text-105 mr-1"></i>
+                                Perfil
+                            </a>                           
+
+                            <div class="dropdown-divider brc-primary-l2"></div>
+
+                            <a class="dropdown-item btn btn-outline-grey btn-h-lighter-secondary btn-a-lighter-secondary" href="{{ path('app_logout') }}">
+                                <i class="fa fa-power-off text-warning-d1 text-105 mr-1"></i>
+                                Cerrar sesión
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

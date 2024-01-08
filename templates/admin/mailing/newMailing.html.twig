@@ -1,0 +1,395 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'admin', 'mailingIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.js"></script>
+    <script src="/js/admin/template/summernote-es-ES.js"></script>
+    
+    <script type="text/javascript" src="/js/admin/mailingElementList.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Crear nuevo Mailing
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Sistema de avisos
+            </small>
+        </h1>  
+        
+        <div class="page-tools">
+            <a type="button" class="btn px-4 btn-primary mb-1" href="{{ path('mailing_index') }}">
+                Volver
+            </a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="mt-45 bcard">
+                <ul class="nav nav-justified nav-tabs nav-tabs-simple" role="tablist">
+                    <li class="nav-item mr-1px">                        
+                        <a class="d-style btn btn-outline-light btn-a-text-dark btn-a-outline-lightgrey bgc-white radius-0 py-2 text-95 active" id="mailElementsListPanel-tab-btn" data-toggle="tab" href="#mailElementsListPanel" role="tab" aria-controls="mailElementsListPanel" aria-selected="true">
+                            <span class="v-active position-tl w-102 border-t-3 brc-blue mt-n3px ml-n1px"></span><!-- show this when active -->
+                            <span class="v-n-active v-hover position-tl w-102 border-t-3 brc-blue-tp3 mt-n2px ml-n1px"></span><!-- show this when hovered & NOT active -->
+                            Destinatarios
+                        </a>
+                    </li>
+
+                    <li class="nav-item mr-1px">
+                        <a class="d-style btn btn-outline-light btn-a-text-dark btn-a-outline-lightgrey bgc-white radius-0 py-2 text-95" id="profile5-tab-btn" data-toggle="tab" href="#profile5" role="tab" aria-controls="profile5" aria-selected="false">
+                            <span class="v-active position-tl w-102 border-t-3 brc-blue mt-n3px ml-n1px"></span>
+                            <span class="v-n-active v-hover position-tl w-102 border-t-3 brc-blue-tp3 mt-n2px ml-n1px"></span>
+                            Correo
+                        </a>
+                    </li>                   
+                </ul>
+
+
+                <div class="tab-content bgc-white p-35 border-1 brc-grey-l1">
+                    <div class="tab-pane fade text-95 active show" id="mailElementsListPanel" role="tabpanel" aria-labelledby="mailElementsListPanel-tab-btn">                                               
+                        <button type="button" class="btn px-4 btn-secondary mb-1 newMailElementBtn" data-target="#formMailElement">
+                            Crear Nuevo destinatario
+                        </button>                        
+                        
+                        <div class="h-1 my-1"></div>
+                        <div class="form-row">
+                            <div class="col-8">
+                                <input type="text" class="form-control" id="mailElementFilterText" placeholder="Nombre o correro">
+                            </div>
+                            <div class="col">
+                                <div class="input-group">
+                                    <select class="custom-select mailElementRolSelector" id="mailElementFilterRol">
+                                        <option value="" selected>Rol ...</option>
+                                        {% for mailElementRol in mailElementRoles %}
+                                            <option value="{{ mailElementRol.id }}">{{ mailElementRol.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-light" type="button" id="mailElementRolConfigBtn"><i class="far fa-edit text-100 "></i></button>
+                                    </div>
+                                </div>                                
+                            </div>                            
+                            <div class="col">
+                                <input type="button" class="btn btn-secondary btn-block" id="mailElementFilterBtn" value="Filtrar">
+                            </div>
+                        </div>
+                        <div class="h-1 my-1"></div>
+                        
+                        {{ include('admin/mailing/mailingElementList.html.twig', {'mailElements': mailElements}) }}
+                    </div>
+
+                    <div class="tab-pane fade text-95" id="profile5" role="tabpanel" aria-labelledby="profile5-tab-btn">
+                        <form class="mt-lg-3" autocomplete="off">
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailSubject" class="mb-0">
+                                    Asunto
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailSubject" name="mailSubject">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailBody" class="mb-0">
+                                    Cuerpo
+                                </label>
+                            </div>
+
+                            <div class="col-sm-8">
+                                <textarea id="mailBody" name="mailBody" class="summernote">
+                                    <p>Hola [|name|], </p>
+                                    
+                                    <p>Te escribo este correo porque ...</p>
+                                </textarea>
+                            </div>
+                            
+                            <div class="col-sm-4">
+                                <div class="alert alert-collapse bgc-white text-dark-tp3 border-1 brc-secondary-l2 shadow-sm radius-0 py-3 d-flex align-items-start">
+                                    <div class="position-tl w-102 m-n1px border-t-4 brc-primary"></div>
+                                    
+                                    <div class="text-dark-tp3">
+                                        <h3 class="text-blue-d1 text-130">Ayuda</h3><br>
+                                        <strong>Palabras clave:</strong><br>
+                                        <ul>
+                                            <li>Nombre completo: <strong>[|fullname|]</strong></li>
+                                            <li>Nombre: <strong>[|name|]</strong></li>
+                                            <li>Apellido 1: <strong>[|surname1|]</strong></li>
+                                            <li>Apellido 2: <strong>[|surname2|]</strong></li>
+                                            <li>Último curso: <strong>[|lastCourse|]</strong></li>                                            
+                                        </ul>
+                                        <br>
+                                        <strong>Recomendaciones:</strong><br>
+                                        <ul>
+                                            <li>Intenta no añadir muchas imágenes</li>
+                                            <li>No pongas demasiados enlaces</li>
+                                            <li>El asunto debe ser menor de 200 caracteres</li>
+                                        </ul>
+                                    </div>                                   
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    </div>                   
+                </div>
+            </div>
+            
+        </div>              
+    </div>  
+              
+    <div class="h-1 my-1"></div><div class="h-1 my-1"></div>
+                    
+    <div class="row">
+        <div class="col-12 text-center">
+            <button id="createMailingBtn" class="btn btn-primary btn-lg mb-1" data-url="{{ path('mailing_create') }}">
+                Crear Mailing
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="formMailElement" tabindex="-1" role="dialog" aria-labelledby="formMailElementLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Nuevo destinatario
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">
+                    <div id="mailElementForm_error" style="">
+                        <div class="alert d-flex bgc-red-l3 brc-success-m4 border-0 p-0" role="alert">
+                            <div class="bgc-red px-3 py-1 text-center radius-l-1">
+                                <span class="fa-2x text-white">
+                                    ⚠ <!-- &#9888; -->
+                                </span>
+                            </div>
+
+                            <span class="ml-3 align-self-center text-dark-tp3 text-110">
+                                El correo está vacío o no es correcto
+                            </span>
+                        </div>
+                    </div>
+                    <form class="mt-lg-3" autocomplete="off" id="mailElementForm">
+                        <input name="mailElementForm_objId" id="mailElementForm_id" type="hidden">
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_name" class="mb-0">
+                                    Nombre
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailElementForm_name" name="mailElementForm_name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-6 col-form-label pr-0">
+                                <label for="mailElementForm_surname1" class="mb-0">
+                                    Apellido 1
+                                </label>
+                            </div>
+                            
+                            <div class="col-sm-6 col-form-label pr-0">
+                                <label for="mailElementForm_surname2" class="mb-0">
+                                    Apellido 2
+                                </label>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailElementForm_surname1" name="mailElementForm_surname1">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailElementForm_surname2" name="mailElementForm_surname2">
+                            </div>
+                        </div>                                                
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_mail" class="mb-0">
+                                    Correo
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="email" class="form-control col-sm-12 col-md-12" id="mailElementForm_mail" name="mailElementForm_mail">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_phone" class="mb-0">
+                                    Teléfono
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="number" class="form-control col-sm-12 col-md-12" id="mailElementForm_phone" name="mailElementForm_phone">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_lastCourse" class="mb-0">
+                                    Último curso
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailElementForm_lastCourse" name="mailElementForm_lastCourse">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_origin" class="mb-0">
+                                    Origen
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control col-sm-12 col-md-12" id="mailElementForm_origin" name="mailElementForm_origin">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_birthday" class="mb-0">
+                                    Fecha de naciemiento
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <input type="date" class="form-control col-sm-12 col-md-12" id="mailElementForm_birthday" name="mailElementForm_birthday">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementForm_rolType" class="mb-0">
+                                    Rol
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <select class="custom-select mailElementRolSelector" id="mailElementForm_rolType" name="mailElementForm_rolType">
+                                    <option value="" selected>Rol ...</option>
+                                    {% for mailElementRol in mailElementRoles %}
+                                        <option value="{{ mailElementRol.id }}">{{ mailElementRol.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <hr>
+                        <label>
+                          <input type="checkbox" id="mailElementForm_testMail" name="mailElementForm_testMail" class="mr-2" value="1">
+                          Es mail de prueba
+                        </label>
+                    </form>
+                </div>
+
+                <div class="modal-footer bgc-default-l5">
+                    <button type="button" class="btn btn-primary" id="mailElementForm_submit">
+                        Guardar
+                    </button>
+
+                    <button type="button" class="btn btn-lighter-grey px-4" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+                        
+    <div class="modal fade" id="formMailElementRol" tabindex="-1" role="dialog" aria-labelledby="formMailElementRolLabel" aria-hidden="true" data-submit-url="{{ path('mailing_submitMailingElementRol') }}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Roles de destinatarios
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">
+                    <div id="mailElementRolCurrent">                        
+                        <button id="mailElementRolNewBtn" class="btn btn-primary btn-block">Crear nuevo rol</button>
+                        <br><br>
+                        <table id="mailingElementRolList" class="mb-0 table table-borderless table-bordered-x brc-secondary-l3 text-dark-m2 radius-1 overflow-hidden">
+                        {% for mailElementRol in mailElementRoles %}
+                            <tr class="bgc-h-yellow-l4 d-style" id="mailElementRol_row_{{ mailElementRol.id }}" data-delete-url="{{ path('mailing_deleteMailingElementRol', {'id': mailElementRol.id }) }}">
+                                <td>{{ mailElementRol.name }}</td>
+                                <td style="text-align: right;">
+                                    <a href="#" data-name="{{ mailElementRol.name }}" data-id="{{ mailElementRol.id }}" class="modifyMailEleRolBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-success btn-a-lighter-success">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+
+                                    <a href="#" data-id="{{ mailElementRol.id }}" class="deleteMailEleRolBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-danger btn-a-lighter-danger">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </div>
+                    
+                    <div id="mailElementRolForm_error" style="">
+                        <div class="alert d-flex bgc-red-l3 brc-success-m4 border-0 p-0" role="alert">
+                            <div class="bgc-red px-3 py-1 text-center radius-l-1">
+                                <span class="fa-2x text-white">
+                                    ⚠ <!-- &#9888; -->
+                                </span>
+                            </div>
+
+                            <span class="ml-3 align-self-center text-dark-tp3 text-110">
+                                El rol tiene que tener un nombre
+                            </span>
+                        </div>
+                    </div>
+                    <form class="mt-lg-3" autocomplete="off" id="mailElementRolForm">
+                        <input name="mailElementRolForm_id" id="mailElementRolForm_id" type="hidden">
+                        <div class="form-group row">
+                            <div class="col-sm-12 col-form-label pr-0">
+                                <label for="mailElementRolForm_name" class="mb-0">
+                                    Nombre
+                                </label>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="mailElementRolForm_name" name="mailElementRolForm_name">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" id="mailElementRolFormSaveBtn">Guardar</button>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>                                                
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

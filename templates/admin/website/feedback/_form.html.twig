@@ -1,0 +1,45 @@
+{{ form_start(form) }}
+
+    <div class="form-group row">
+        <div class="col-sm-3 col-form-label text-sm-right pr-0 {{ form.logo.vars.errors|length > 0?'text-danger-m1' }}"><label class="mb-0 required" for="feedback_logo">Logotipo</label></div>
+        <div class="col-sm-9">            
+            {% if feedback.logo %}
+            <div class="imgBlock col-sm-4 col-md-6 pr-0 pl-0">                
+                <div class="pos-rel d-style my-3 radius-1 shadow-sm overflow-hidden bgc-primary-m3" style="max-width: 200px;">
+                    <a href="#" class="show-lightbox">
+                        <img src="{{ asset('uploads/feedbacks/' ~ feedback.logo) }}" class="w-100 d-zoom-2">
+                    </a>
+
+                    <div class="mt-hover position-tl w-100 bgc-black-tp4 p-25">
+                        <div class="d-flex justify-content-center action-buttons text-110">                            
+                            <a href="#" class="imgChangeBtn mx-2" data-id="feedback_logo"><i class="fa fa-pen text-orange-m2"></i></a>
+                            <a href="#" class="imgDeleteBtn mx-2" data-id="feedback_logo" data-url="{{ path('feedback_deleteLogo', {'id':feedback.id}) }}"><i class="fa fa-times text-danger-m3"></i></a>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            {% endif %}
+            <div class="imgFieldBlock col-sm-8 col-md-6 pr-0 pl-0" style="display: {{ feedback.logo?'none' }}">
+            {{ form_widget(form.logo, {'attr':{'class':'ace-file-input'}}) }} 
+            {{ form_errors(form.logo) }}
+            {% if feedback.logo %}<small class="imgFieldCancelBlock"><a href="#" class="imgCancelBtn">Cancelar cambio de logotipo</a></small>{% endif %}
+            </div>            
+        </div>        
+    </div>     
+
+    {{ form_row(form.companyName) }}
+    {{ form_row(form.contactName) }}
+    {{ form_row(form.link) }}
+    {{ form_row(form.remark, {'attr':{'rows':8}}) }}        
+    
+    <div class="my-5 border-t-1 brc-grey-l1 bgc-grey-l3 py-3">
+        <div class="offset-md-3 col-md-9">
+            <button class="btn btn-info" type="submit">
+                <i class="fa fa-check mr-1"></i>
+                {{ button_label|default('Guardar') }}
+            </button>
+
+            &nbsp; <a href="{{ path('website_index', {'tab':'feedback'}) }}">Volver al listado</a>
+        </div>
+    </div>    
+{{ form_end(form) }}

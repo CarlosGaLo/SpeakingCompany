@@ -1,0 +1,179 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'admin', 'mailingIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>        
+        
+    <script type="text/javascript" src="/js/admin/mailingList.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Mailing
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Sistema de avisos
+            </small>
+        </h1>
+
+        <div class="page-tools">
+            <a type="button" class="btn px-4 btn-primary mb-1" href="{{ path('mailing_newMailing') }}">
+                Nuevo Mailing
+            </a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if mailings|length %}
+                <table id="mailingList" class="mb-0 table table-borderless table-bordered-x brc-secondary-l3 text-dark-m2 radius-1 overflow-hidden">
+                    <thead class="text-dark-tp3 bgc-grey-l4 text-90 border-b-1 brc-transparent">
+                        <tr>
+                            <th class="text-center pr-0">                                
+                            </th>
+                            <th>
+                                Asunto
+                            </th>
+                            
+                            <th>
+                                Creado
+                            </th>
+
+                            <th class="d-none d-sm-table-cell">
+                                Mails 
+                            </th>
+
+                            <th class="d-none d-sm-table-cell">
+                                Último intento
+                            </th>                                   
+
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="mt-1">
+                        {% for mailing in mailings %}
+                        <tr class="bgc-h-yellow-l4 d-style {{ (mailing.finished or mailing.processing)?'active' }} {{ mailing.finished?'bgc-success-l3' }} {{ mailing.processing?'bgc-danger-l3' }}" id="mailing_row_{{ mailing.id }}" data-delete-url="{{ path('mailing_deleteMailing', {'id': mailing.id }) }}" data-launch-url="{{ path('mailing_launchMailing', {'id': mailing.id }) }}">
+                            <td class="text-center pr-0 pos-rel">
+                                <div class="position-tl h-100 ml-n1px border-l-4 brc-orange-m1 v-hover"></div>
+                                <div id="mailing_rowMark_finished_{{ mailing.id }}" class="position-tl h-100 ml-n1px border-l-4 brc-success-m1" style="{{ mailing.finished?'':'display:none' }}"></div>
+                                <div id="mailing_rowMark_processing_{{ mailing.id }}" class="position-tl h-100 ml-n1px border-l-4 brc-danger-m1" style="{{ mailing.processing?'':'display:none' }}"></div>
+                            </td>
+                            <td class="text-600">
+                                {{ mailing.subject }}
+                            </td>
+
+                            <td>
+                                {{ mailing.createDate|date("d/m/y H:i") }}
+                            </td>
+                            
+                            <td class="d-none d-sm-table-cell text-grey text-95"> 
+                                <span id="mailing_currMails_{{ mailing.id }}">{{ mailing.totalMails + 0 }}</span> / <span id="mailing_totalMails_{{ mailing.id }}">{{ mailing.getToCount + mailing.totalMails }}</span>                                
+                            </td>
+                            
+                            <td>
+                                {{ (mailing.lastTryDate?mailing.lastTryDate|date("d/m/y H:i"):'--') }}
+                            </td>                                                              
+
+                            <td>   
+                                {% if not mailing.finished %}
+                                <div class="d-none d-lg-flex"> 
+                                    <a href="#" data-id="{{ mailing.id }}" class="launchMailingBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-success btn-a-lighter-success">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </a>
+
+                                    <a href="#" data-id="{{ mailing.id }}" class="deleteMailingBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-danger btn-a-lighter-danger">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </div>
+
+                                <div class="dropdown d-inline-block d-lg-none dd-backdrop dd-backdrop-none-lg">
+                                    <a href="#" class="btn btn-default btn-xs py-15 radius-round dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-cog"></i>
+                                    </a>
+
+                                    <div class="dropdown-menu dd-slide-up dd-slide-none-lg">
+                                        <div class="dropdown-inner">
+                                            <div class="dropdown-header text-100 text-secondary-d1 border-b-1 brc-secondary-l2 text-600 mb-2">
+                                                {{ mailing.subject }}
+                                            </div>
+                                            <a href="#" class="dropdown-item modifyMailEleBtn" data-id="{{ mailing.id }}">
+                                                <i class="fa fa-pencil-alt text-blue mr-1 p-2 w-4"></i>
+                                                Editar
+                                            </a>
+                                            <a href="#" class="dropdown-item deleteMailingBtn" data-id="{{ mailing.id }}">
+                                                <i class="fa fa-trash-alt text-danger-m1 mr-1 p-2 w-4"></i>
+                                                Eliminar
+                                            </a>                                                    
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                                
+                                <span id="mailing_rowLabel_processing_{{ mailing.id }}" class="m-1 badge bgc-red-l1 border-1 brc-black-tp9 text-danger-d3" style="{{ mailing.processing?'':'display:none' }}">
+                                    EN PROCESO...
+                                </span>
+                                  
+                                <div id="mailing_rowLabel_finished_{{ mailing.id }}" style="{{ mailing.finished?'':'display:none' }}">
+                                    <span class="m-1 badge bgc-green-l1 border-1 brc-black-tp9 text-success-d3">
+                                        FINALIZADO
+                                    </span>
+
+                                    <a href="#" data-id="{{ mailing.id }}" class="deleteMailingBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-danger btn-a-lighter-danger">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </div>
+
+                            </td>
+                        </tr> 
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="row mb-1">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="alert alert-secondary bgc-default-l4 brc-secondary-m3" role="alert">
+                            <h5 class="alert-heading text-blue text-uppercase font-bolder">No hay mailings</h5>
+                            Los mailings son correos que se envían a un número elevado de personas e irán apareciendo aquí para que los revises.
+                        </div>                       
+                    </div>
+                </div>
+            {% endif %}
+        </div>              
+    </div>
+            
+    <div class="modal fade" id="mailingErrorModal" tabindex="-1" role="dialog" aria-labelledby="formMailElementLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Error durante el mailing
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">
+                    <p id="mailingErrorText"></p>
+                </div>
+
+                <div class="modal-footer bgc-default-l5">                    
+                    <button type="button" class="btn btn-lighter-grey px-4" data-dismiss="modal">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

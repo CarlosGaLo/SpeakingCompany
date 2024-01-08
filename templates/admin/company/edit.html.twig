@@ -1,0 +1,50 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Editar empresa - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'admin', 'companyIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            {{  company.name }}
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Editar empresa
+            </small>
+        </h1>    
+            
+        <div class="page-tools">
+            <a href="{{ path('company_index') }}">Volver</a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+        
+    {{ form_start(form) }}        
+        {{ form_row(form.name) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.phone) }}                
+{#        {{ form_row(form.twitter) }} 
+        {{ form_row(form.facebook) }} #}
+
+        <div class="my-5 border-t-1 brc-grey-l1 bgc-grey-l3 py-3">
+            <div class="offset-md-3 col-md-9">
+                <button class="btn btn-info" type="submit">
+                    <i class="fa fa-check mr-1"></i>
+                    Actualizar
+                </button>
+
+                &nbsp; <a href="{{ path('company_index') }}">Volver</a>
+            </div>
+        </div>    
+    {{ form_end(form) }} 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>    
+{% endblock %}

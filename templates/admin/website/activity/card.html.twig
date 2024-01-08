@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-12">
+        {% if not activities|length %}
+            <div class="row mb-1">
+                <div class="col-lg-6 mx-auto">
+                    <div class="alert alert-secondary bgc-default-l4 brc-secondary-m3" role="alert">
+                        <h5 class="alert-heading text-blue text-uppercase font-bolder">No hay actividades</h5>
+                        Las actividades que incluyas aquí aparecerán en la página web pública en la sección de actividades. Crea tu primera actividad para la empresa.
+                    </div>
+
+                    <br>
+                    <div class="text-center"><a href="{{ path('activity_new') }}" class="btn btn-md btn-primary mb-2px">Nueva actividad</a></div>
+                </div>
+            </div>
+        {% else %}
+            <div class="text-right"><a href="{{ path('activity_new') }}" class="btn btn-md btn-primary mb-2px">Nueva actividad</a></div>
+            <table id="simple-table" class="table table-bordered table-bordered-x table-hover text-dark-m2">
+                <thead class="text-dark-m3 bgc-grey-l4">
+                    <tr>                                        
+                        <th class="text-center pr-0">
+                            <span class="d-md-none"><i class="fa fa-plus text-sm"></i></span>
+                            <span class="d-none d-md-inline-block">Detalles</span>
+                        </th>
+                        <th>Nombre</th>                                                               
+                        <th class="d-none d-sm-table-cell"><i class="far fa-clock text-110 text-success-d1"></i> Fecha</th>                                        
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for activity in activities %}
+                        <tr class="d-style bgc-h-default-l3">                                            
+                            <td class="text-center pr-0">
+                                <div class="action-buttons">
+                                    <a href="#" data-toggle="collapse" data-target="#table-detail-{{ activity.id }}" class="text-success text-110 px-2 collapsed" title="Show Details" aria-expanded="false"><i class="fa fa-angle-double-down"></i> <span class="sr-only">Detalles</span></a>
+                                </div>
+                            </td>
+
+                            <td>{{ activity.name }}</td>                            
+                            <td class="d-none d-sm-table-cell">{{ activity.activityDate|date('d/m/y') }}</td>                                            
+                            <td>
+                                <div class="d-none d-lg-flex text-muted">                                
+                                    <a href="{{ path('activity_edit', {'id': activity.id}) }}" class="btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-primary btn-a-outline-primary btn-text-primary"><i class="fa fa-pencil-alt"></i></a>
+                                    <a href="#" data-url="{{ path('activity_delete', {'id': activity.id}) }}" class="deleteActivityBtn btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-danger btn-a-outline-danger btn-text-danger" data-activity-name="{{ activity.name }}" data-activityId="{{ activity.id }}"><i class="fa fa-trash-alt"></i></a>                                                    
+                                </div>
+
+                                <div class="dropdown d-inline-block d-lg-none dd-backdrop dd-backdrop-none-md">
+                                    <a href="#" class="btn btn-outline-warning btn-xs radius-round dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog text-110"></i></a>
+                                    <div class="dropdown-menu dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">                                        
+                                            <a href="{{ path('activity_edit', {'id': activity.id}) }}" class="dropdown-item"><i class="fa fa-pencil-alt text-blue-m1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Editar</a>
+                                            <a href="#" data-url="{{ path('activity_delete', {'id': activity.id}) }}" class="deleteActivityBtn dropdown-item" data-activity-name="{{ activity.name }}" data-activityId="{{ activity.id }}"><i class="fa fa-trash text-danger-m1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Eliminar</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr class="border-0 detail-row bgc-white">
+                            <td colspan="4" class="p-0 border-none">
+                                <div class="table-detail collapse" id="table-detail-{{ activity.id }}" style="">
+                                    <div class="row">
+                                        <div class="col-12 col-md-10 offset-md-1 p-4">
+                                            <div class="alert bgc-grey-l4 border-none border-l-4 brc-primary-m1 radius-0 mb-0">
+                                                <div class="media">
+                                                    <img src="{{ asset('uploads/activities/' ~ activity.image) }}" class="mr-3 w-25" alt="{{ activity.name }}">
+                                                    <div class="media-body">
+                                                        <h5 class="text-primary-m2 mt-0">{{ activity.name }}</h5>
+                                                            {{ activity.remark|nl2br }}
+                                                    </div>
+                                                </div>                                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>  
+                    {% endfor %}
+                </tbody>
+            </table> 
+        {% endif %}
+    </div>
+</div>   

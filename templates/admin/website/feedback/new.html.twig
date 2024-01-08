@@ -1,0 +1,30 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Nueva opinión - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'website', 'websiteIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Crear Opinión            
+        </h1>    
+            
+        <div class="page-tools">
+            <a href="{{ path('website_index', {'tab':'feedback'}) }}">Volver al listado</a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+        
+    {{ include('admin/website/feedback/_form.html.twig') }}    
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }} 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="/js/admin/feedbackForm.js"></script> 
+{% endblock %}

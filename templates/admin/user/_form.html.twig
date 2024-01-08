@@ -1,0 +1,102 @@
+{{ form_start(form) }}
+<ul class="nav nav-tabs page-nav-tabs nav-justified nav-tabs-scroll is-scrollable mx-n3 nav-tabs-boxed mx-lg-0" role="tablist" style="">
+    <li class="nav-item">
+        <a class="nav-link active" id="tabs-tab" data-toggle="tab" href="#tabs" role="tab" aria-controls="tabs" aria-selected="true">
+            <i class="text-success-m2 fa fa-user mr-2 text-110"></i>
+            General
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" id="modals-tab" data-toggle="tab" href="#modals" role="tab" aria-controls="modals" aria-selected="false">
+            <i class="text-orange-m1 fas fa-desktop mr-2 text-110"></i>
+            Parte pública
+        </a>
+    </li>    
+</ul>
+
+<div class="tab-content border-0 px-0 pt-5">
+    <div class="tab-pane fade active show" id="tabs" role="tabpanel" aria-labelledby="tabs-tab">
+
+        <div class="form-group row">
+        <div class="col-sm-3 col-form-label text-sm-right pr-0 {{ form.photo.vars.errors|length > 0?'text-danger-m1' }}"><label class="mb-0 required" for="user_photo">Foto</label></div>
+        <div class="col-sm-9">            
+            {% if user.photo %}
+            <div class="imgBlock col-sm-4 col-md-6 pr-0 pl-0">                
+                <div class="pos-rel d-style my-3 radius-1 shadow-sm overflow-hidden bgc-primary-m3" style="max-width: 200px;">
+                    <a href="#" class="show-lightbox">
+                        <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="w-100 d-zoom-2">
+                    </a>
+
+                    <div class="mt-hover position-tl w-100 bgc-black-tp4 p-25">
+                        <div class="d-flex justify-content-center action-buttons text-110">                            
+                            <a href="#" class="imgChangeBtn mx-2" data-id="user_photo"><i class="fa fa-pen text-orange-m2"></i></a>
+                            <a href="#" class="imgDeleteBtn mx-2" data-id="user_photo" data-url="{{ path('user_deletePhoto', {'id':user.id}) }}"><i class="fa fa-times text-danger-m3"></i></a>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            {% endif %}
+            <div class="imgFieldBlock col-sm-8 col-md-6 pr-0 pl-0" style="display: {{ user.photo?'none' }}">
+            {{ form_widget(form.photo, {'attr':{'class':'ace-file-input'}}) }} 
+            {{ form_errors(form.photo) }}
+            {% if user.photo %}<small class="imgFieldCancelBlock"><a href="#" class="imgCancelBtn">Cancelar cambio de foto</a></small>{% endif %}
+            </div>            
+        </div>        
+    </div>    
+
+    {{ form_row(form.name) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.phone) }}
+    <div style="display: {{ is_granted('ROLE_ADMIN')?'':'none' }}">{{ form_row(form.roles) }}</div>
+    
+    {% if user.id %}
+        <div class="form-group row">
+            <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for=""></label></div>
+            <div class="col-sm-9">
+                <button id="recoverPassBtn" class="btn btn-smd btn-light-primary font-bolder letter-spacing-1 mb-2px" type="button" data-user-mail="{{ user.email }}" data-url="{{ path('user_restorePass', {'id':user.id}) }}">Solicitar cambio de contraseña</button>
+            </div>        
+        </div>
+    {% else %}
+        <div class="form-group row">
+            <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for=""></label></div>
+            <div class="col-sm-9">
+                <div class="alert alert-secondary bgc-default-l4 brc-secondary-m3 col-lg-6" role="alert">
+                    <h6 class="alert-heading text-blue text-uppercase font-bolder">¿Y la contraseña?</h6>
+                    Enviaremos instrucciones al e-mail del usuario para que pueda cambiar la clave y sólo él la sepa.
+                </div>
+            </div>        
+        </div> 
+    {% endif %}
+
+    </div>
+    
+    <div class="tab-pane fade" id="modals" role="tabpanel" aria-labelledby="modals-tab">
+
+        {{ form_row(form.twitter) }}
+        {{ form_row(form.facebook) }}
+        {{ form_row(form.instagram) }}
+        {{ form_row(form.linkedIn) }}
+        <hr>
+        {{ form_row(form.title) }}
+        
+        <div class="form-group row">
+            <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for="user_curriculum">Curriculum</label></div>
+            <div class="col-sm-9">{{ form_widget(form.curriculum) }}</div>        
+        </div>        
+    </div>
+</div>
+
+    
+    
+    <div class="my-5 border-t-1 brc-grey-l1 bgc-grey-l3 py-3">
+        <div class="offset-md-3 col-md-9">
+            <button class="btn btn-info" type="submit">
+                <i class="fa fa-check mr-1"></i>
+                {{ button_label|default('Guardar') }}
+            </button>
+
+            &nbsp; <a href="{{ path('user_index') }}">Volver al listado</a>
+        </div>
+    </div>    
+{{ form_end(form) }}

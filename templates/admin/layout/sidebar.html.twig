@@ -1,0 +1,133 @@
+<div id="sidebar" class="sidebar sidebar-fixed expandable sidebar-light">
+    <div class="sidebar-inner">
+        <div class="ace-scroll flex-grow-1" ace-scroll>           
+            <ul class="nav has-active-border active-on-right" role="navigation" aria-label="Main">
+                <li class="nav-item {{ section|default('dashboard') == 'dashboard'?'active'}}">
+                    <a href="{{ path('adminIndex') }}" class="nav-link">
+                        <i class="nav-icon fa fa-home"></i>
+                        <span class="nav-text fadeable">
+                            <span>Home</span>
+                        </span>
+                    </a>
+                    <b class="sub-arrow"></b>
+                </li>
+
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item {{ section|default('dashboard') == 'admin'?'active open'}}">
+                    <a href="{{ path('user_index') }}" class="nav-link dropdown-toggle"> 
+                        <i class="nav-icon fa fa-sitemap"></i>
+                        <span class="nav-text fadeable">
+                            <span>Administración</span>
+                        </span>
+
+                        <b class="caret fa fa-angle-left rt-n90"></b>
+                    </a>
+
+                    <div class="hideable submenu collapse {{ section|default('dashboard') == 'admin'?'show'}}">
+                        <ul class="submenu-inner">
+                            <li class="nav-item {{ (section|default('dashboard') == 'admin' and page|default('') == 'userIndex') ?'active'}}">
+                                <a href="{{ path('user_index') }}" class="nav-link">
+                                    <span class="nav-text">
+                                        <span>Usuarios</span>
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item {{ (section|default('dashboard') == 'admin' and page|default('') == 'companyIndex') ?'active'}}">
+                                <a href="{{ path('company_index') }}" class="nav-link">
+                                    <span class="nav-text">
+                                        <span>Empresa</span>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item {{ (section|default('dashboard') == 'admin' and page|default('') == 'mailingIndex') ?'active'}}">
+                                <a href="{{ path('mailing_index') }}" class="nav-link">
+                                    <span class="nav-text">
+                                        <span>Mailing</span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <b class="sub-arrow"></b>
+                </li>
+                {% endif %}
+                
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item {{ section|default('dashboard') == 'course'?'active'}}">
+                    <a href="{{ path('course_index') }}" class="nav-link">
+                        <i class="nav-icon far fa-window-restore"></i>
+                        <span class="nav-text fadeable">
+                            <span>Cursos</span>                            
+                        </span>
+                    </a>
+
+                    <b class="sub-arrow"></b>
+                </li> 
+                {% endif %}
+                
+                {% if not is_granted('ROLE_ADMIN') %}
+                <li class="nav-item {{ section|default('dashboard') == 'course'?'active'}}">
+                    <a href="{{ path('course_available_public_index') }}" class="nav-link dropdown-toggle"> 
+                        <i class="nav-icon fa fa-window-restore"></i>
+                        <span class="nav-text fadeable">
+                            <span>Cursos</span>
+                        </span>
+
+                        <b class="caret fa fa-angle-left rt-n90"></b>
+                    </a>
+
+                    <div class="hideable submenu collapse {{ section|default('dashboard') == 'course'?'show'}}">
+                        <ul class="submenu-inner">
+                            <li class="nav-item {{ (section|default('dashboard') == 'course' and page|default('') == 'available') ?'active'}}">
+                                <a href="{{ path('course_available_public_index') }}" class="nav-link">
+                                    <span class="nav-text">
+                                        <span>Disponibles</span>
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item {{ (section|default('dashboard') == 'course' and page|default('') == 'owner') ?'active'}}">
+                                <a href="{{ path('course_owner_public_index') }}" class="nav-link">
+                                    <span class="nav-text">
+                                        <span>En propiedad</span>
+                                    </span>
+                                </a>
+                            </li>                                                        
+                        </ul>
+                    </div>
+                    <b class="sub-arrow"></b>                                                            
+                </li> 
+                {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item {{ section|default('dashboard') == 'contact'?'active'}}">
+                    <a href="{{ path('contact_index') }}" class="nav-link">
+                        <i class="nav-icon far fa-comments"></i>
+                        <span class="nav-text fadeable">
+                            <span>Contactos</span>
+                            {% if contactNb %}<span class="badge badge-primary radius-round text-90 ml-1 mr-2px badge-sm ">{{ contactNb }}</span>{% endif %}
+                        </span>
+                    </a>
+
+                    <b class="sub-arrow"></b>
+                </li> 
+                {% endif %}
+                
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item" {{ section|default('dashboard') == 'website'?'active'}}">
+                    <a href="{{ path('website_index') }}" class="nav-link">
+                        <i class="nav-icon fa fa-desktop"></i>
+                        <span class="nav-text fadeable">
+                            <span>Website</span>                            
+                        </span>
+                    </a>
+                    
+                    <b class="sub-arrow"></b>
+                </li> 
+                {% endif %}
+            </ul>
+        </div>        
+    </div>
+</div>

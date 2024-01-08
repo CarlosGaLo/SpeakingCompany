@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <base href="../" />
+
+    <title>Validación de correo electrónico - Más que Palabras</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/regular.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/brands.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/solid.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap">
+    <link rel="stylesheet" type="text/css" href="/css/admin/ace.min.css">
+    <link rel="icon" type="image/png" href="/images/logoMini.png" />
+    
+    <style>
+      .body-container {
+        background-image: linear-gradient(#6baace, #264783);
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+      }
+
+      .carousel-item>div {
+        height: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      
+      @media (max-width: 767.98px) {
+        .tab-sliding .tab-pane:not(.active) {
+          max-height: 0 !important;
+        }
+
+        .tab-sliding .tab-pane.active {
+          min-height: 90vh;
+          max-height: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="body-container">
+
+      <div class="main-container container bgc-transparent">
+
+        <div role="main" class="main-content minh-100 justify-content-center">
+          <div class="p-2 p-md-4">
+            <div class="row justify-content-center">
+              <div class="shadow radius-1 overflow-hidden bg-white col-12 col-lg-5 offset-lg-1">
+
+                <div class="row">                  
+
+                  <div class="col-12 py-lg-5 bgc-white px-0">                    
+                    <ul class="d-none mt-n4 mb-4 nav nav-tabs nav-tabs-simple justify-content-end" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#id-tab-login" role="tab" aria-controls="login" aria-selected="true">
+                          Login
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#id-tab-signup" role="tab" aria-controls="signup" aria-selected="false">
+                          Signup
+                        </a>
+                      </li>
+                    </ul>
+                   
+
+                      <div class="tab-pane active mh-100 px-3 px-lg-0 pb-3" id="id-tab-signup" data-swipe-prev="#id-tab-login">     
+                        {% if not error %}
+                            <div class="d-none d-lg-block col-md-6 offset-md-3 mt-lg-4 px-0">
+                              <img src="/images/logo.jpg" style="width: 100%;"> 
+
+                              <h4 class="text-dark-tp4 border-b-1 brc-grey-l1 pb-1 text-130">
+                                <i class="fa fa-check text-success mr-1"></i>
+                                Correo electrónico validado
+                              </h4>
+                              ¡Tu correo electrónico se ha validado correctamente!
+                              <br><br>
+                              Ya puedes entrar a tu panel de estudiante
+                            </div>
+
+                            <div class="d-lg-none text-secondary-m1 my-4 text-center">
+                                <img src="/images/logo.jpg" style="width: 100%;">
+
+                                <strong class="text-success">Contraseña cambiada</strong><br>
+                                ¡Tu contraseña se ha cambiado correctamente!
+                            </div>
+                            <br><br>
+                            <div class="text-center">
+                                    <a class="btn btn-primary" href="{{ path('app_login') }}">Volver al Login</a>
+                            </div>
+                        {% else %}
+                            <div class="d-none d-lg-block col-md-6 offset-md-3 mt-lg-4 px-0">
+                              <img src="/images/logo.jpg" style="width: 100%;"> 
+
+                              <h4 class="text-dark-tp4 border-b-1 brc-grey-l1 pb-1 text-130">
+                                <i class="fa fa-exclamation-triangle text-danger mr-1"></i>
+                                Lo sentimos mucho...
+                              </h4>
+                              {{ error.errorDescription }}
+                              <br><br>
+                              Date de alta de nuevo para volver a recibir el correo de verificación
+                            </div>
+
+                            <div class="d-lg-none text-secondary-m1 my-4 text-center">
+                                <img src="/images/logo.jpg" style="width: 100%;">
+
+
+                                <strong class="text-danger">Tenemos un problema ...</strong><br>
+                                {{ error.errorDescription }}
+                                <br><br>
+                                Date de alta de nuevo para volver a recibir el correo de verificación
+                            </div>
+                            <br><br>
+                            <div class="text-center">
+                                    <a class="btn btn-primary" href="{{ path('app_login') }}">Volver al Login</a>
+                            </div>                        
+                        {% endif %}
+                      </div>                    
+
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            <div class="d-lg-none my-3 text-white-tp1 text-center">
+              Más que Palabras &copy; {{ 'now'|date('Y') }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js/dist/umd/popper.min.js"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>      
+      <script type="text/javascript" src="/js/admin/template/ace.min.js"></script>      
+      
+      <script type="text/javascript">
+        jQuery(function($) {          
+          $('a[data-toggle="tab"]').on('click', function() {
+            $('a[data-toggle="tab"]').removeClass('active');
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>

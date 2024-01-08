@@ -1,0 +1,92 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'admin', 'userIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="/js/admin/userList.js"></script>     
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Usuarios
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Personas que puede entrar en la Administración
+            </small>
+        </h1>
+
+        {% if is_granted('ROLE_ADMIN') %}
+        <div class="page-tools">
+            <a href="{{ path('user_new') }}" class="btn btn-sm btn-info">
+                <i class="fa fa-user text-100"></i> &nbsp;Nuevo usuario
+            </a>
+        </div>
+        {% endif %}
+    </div>           
+
+    <div class="h-1 my-1"></div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <table id="simple-table" class="table table-bordered table-bordered-x table-hover text-dark-m2">
+                <thead class="text-dark-m3 bgc-grey-l4">
+                    <tr>                      
+                        <th>Nombre</th>                      
+                        <th class="d-none d-sm-table-cell">E-mail</th>
+                        <th class="d-none d-sm-table-cell">Teléfono</th>                      
+                        <th>Rol</th>                      
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in users %}
+                        <tr class="bgc-h-default-l3 d-style">
+                            <td>{{ user.name }}</td>
+                            <td class="d-none d-sm-table-cell"><a href="mailto:{{ user.email }}">{{ user.email }}</td>
+                            <td class="d-none d-sm-table-cell"><a href="tel:{{ user.phone }}">{{ user.phone }}</td>
+                            <td>
+                                {% for rol in user.roles %} 
+                                    {% if rol == 'ROLE_ADMIN'%}
+                                        <span class="badge badge-sm bgc-success-l2 text-success-d2 border-1 brc-success-m3">Administrador</span>
+                                    {% elseif rol == 'ROLE_STUDENT' %}
+                                        <span class="badge badge-sm bgc-secondary-l2 text-secondary-d2 border-1 brc-secondary-m3">Estudiante</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <div class="d-none d-lg-flex text-muted float-right">
+                                    {#<a href="{{ path('user_show', {'id': user.id}) }}" class="btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-warning btn-a-outline-warning btn-text-warning"><i class="fa fa-eye"></i></a>#}
+                                    {% if app.user == user or is_granted('ROLE_ADMIN') %}<a href="{{ path('user_edit', {'id': user.id}) }}" class="btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-primary btn-a-outline-primary btn-text-primary"><i class="fa fa-pencil-alt"></i></a>{% endif %}
+                                    {% if app.user != user and is_granted('ROLE_ADMIN') %}<a href="#" data-url="{{ path('user_delete', {'id': user.id}) }}" data-user-name="{{ user.name }}" class="deleteUserBtn btn radius-1 btn-sm btn-brc-tp btn-outline-default btn-h-outline-danger btn-a-outline-danger btn-text-danger"><i class="fa fa-trash-alt"></i></a>{% endif %}
+                                </div>
+
+                                <div class="dropdown d-inline-block d-lg-none dd-backdrop dd-backdrop-none-md">
+                                    <a href="#" class="btn btn-outline-warning btn-xs radius-round dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog text-110"></i></a>
+                                    <div class="dropdown-menu dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">
+                                            {#<a href="{{ path('user_show', {'id': user.id}) }}" class="dropdown-item"><i class="fa fa-eye text-warning-d1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Flag</a>#}
+                                            {% if app.user == user or is_granted('ROLE_ADMIN') %}<a href="{{ path('user_edit', {'id': user.id}) }}" class="dropdown-item"><i class="fa fa-pencil-alt text-blue-m1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Editar</a>{% endif %}
+                                            {% if app.user != user and is_granted('ROLE_ADMIN') %}<a href="#" data-url="{{ path('user_delete', {'id': user.id}) }}" data-user-name="{{ user.name }}" class="deleteUserBtn dropdown-item"><i class="fa fa-trash text-danger-m1 mr-1 bgc-white-tp1 radius-round p-2 w-4"></i> Eliminar</a>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    {% endfor %}                                                                                
+                </tbody>
+            </table>
+        </div>              
+    </div>            
+{% endblock %}

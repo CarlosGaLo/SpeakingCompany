@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="es">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <base href="../" />
+
+    <title>Login - Más que Palabras</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/regular.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/brands.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/solid.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap">
+    <link rel="stylesheet" type="text/css" href="/css/admin/ace.min.css">
+    <link rel="icon" type="image/png" href="/images/logoMini.png" />
+    
+    <style>
+      .body-container {
+        background-image: linear-gradient(#6baace, #264783);
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+      }
+
+      .carousel-item>div {
+        height: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      
+      @media (max-width: 767.98px) {
+        .tab-sliding .tab-pane:not(.active) {
+          max-height: 0 !important;
+        }
+
+        .tab-sliding .tab-pane.active {
+          min-height: 90vh;
+          max-height: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="body-container">
+
+      <div class="main-container container bgc-transparent">
+
+        <div role="main" class="main-content minh-100 justify-content-center">
+          <div class="p-2 p-md-4">
+            <div class="row">
+              <div class="shadow radius-1 overflow-hidden bg-white col-12 col-lg-10 offset-lg-1">
+
+                <div class="row">
+
+                  <div class="d-none d-lg-flex col-lg-5 border-r-1 brc-default-l2 px-0">
+                    <div id="loginBgCarousel" class="carousel slide minw-100 h-100">
+                      <ol class="carousel-indicators d-none">
+                        <li data-target="#loginBgCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#loginBgCarousel" data-slide-to="1"></li>
+                        <li data-target="#loginBgCarousel" data-slide-to="2"></li>
+                        <li data-target="#loginBgCarousel" data-slide-to="3"></li>
+                      </ol>
+
+                      <div class="carousel-inner minw-100 h-100">
+                        <div class="carousel-item active minw-100 h-100">
+                          <div style="background-image: url(/images/login-bg-1.svg);" class="bgc-primary-l4 d-flex flex-column align-items-center justify-content-center">
+                              <img src="/images/logo.jpg" style="width: 100%;">                            
+
+                            <div class="mt-5 mx-4 text-120 text-dark-tp4 text-justify">
+                              Únete a nuestra comunidad para hacer amigos, encontrar expertos y recibir ofertas exclusivas                              
+                            </div>
+
+                            <div class="mt-auto mb-4 text-dark-tp3">
+                              {{ getCompany().name|default('Nonamed') }} &copy; {{ 'now'|date('Y') }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="col-12 col-lg-7 py-lg-5 bgc-white px-0">                    
+                    <ul id="navTab" class="d-none mt-n4 mb-4 nav nav-tabs nav-tabs-simple justify-content-end" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#id-tab-login" role="tab" aria-controls="login" aria-selected="true">
+                          Login
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#id-tab-signup" role="tab" aria-controls="signup" aria-selected="false">
+                          Signup
+                        </a>
+                      </li>
+                    </ul>
+
+
+                    <div class="tab-content tab-sliding border-0 p-0" data-swipe="right">
+
+                      <div class="tab-pane active show mh-100 px-3 px-lg-0 pb-3" id="id-tab-login">
+                        <div class="d-none d-lg-block col-md-6 offset-md-3 mt-lg-4 px-0">
+                          <h4 class="text-dark-tp4 border-b-1 brc-grey-l1 pb-1 text-130">
+                            <i class="fa fa-coffee text-orange-m2 mr-1"></i>
+                            ¿Quién eres?
+                          </h4>
+                        </div>
+
+                        <div class="d-lg-none text-secondary-m1 my-4 text-center">
+                            <img src="/images/logo.jpg" style="width: 100%;">                          
+
+                          ¿Quién eres?
+                        </div>                          
+                          
+                          {% if error %}  
+                              <br>  
+                              <div role="alert" class="offset-md-3 col-md-6 alert alert-danger bgc-danger-l3 brc-danger-m2 border-2 d-flex align-items-center">
+                                  <i class="fas fa-exclamation-triangle mr-3 fa-2x text-danger"></i>
+                                  <div class="text-dark-tp3">
+                                      {{ error.messageKey|trans(error.messageData, 'security') }}
+                                  </div>                                  
+                              </div>                              
+                            {% endif %}
+                          
+                        <form class="form-row mt-4" method="post">                                                          
+                            
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                            
+                          <div class="form-group col-md-6 offset-md-3">
+                            <div class="d-flex align-items-center input-floating-label text-blue-m1 brc-blue-m2">
+                              <input type="email" class="form-control form-control-lg pr-4 shadow-none" id="inputEmail" name="email" value="{{ last_username }}" autocomplete="off" required autofocus />
+                              <i class="fa fa-user text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="inputEmail">E-mail</label>
+                            </div>
+                          </div>
+
+                          <div class="form-group col-md-6 offset-md-3 mt-2 mt-md-1">
+                            <div class="d-flex align-items-center input-floating-label text-blue-m1 brc-blue-m2">
+                              <input type="password" class="form-control form-control-lg pr-4 shadow-none" name="password" id="inputPassword" autocomplete="off" required />
+                              <i class="fa fa-key text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="inputPassword">Contraseña</label>
+                            </div>
+                          </div>
+                          <div class="col-md-6 offset-md-3 text-right text-md-right mt-n2 mb-2">
+                            <a href="#" class="text-primary-m2 text-95" data-toggle="tab" data-target="#id-tab-forgot">
+                              ¿Olvidaste tu contraseña?
+                            </a>
+                          </div>
+
+                          <div class="form-group col-md-6 offset-md-3">
+                            <label class="d-inline-block mt-3 mb-0 text-secondary-d2">                                
+                                <input type="checkbox" class="mr-1" id="_remember_me" checked="checked" />
+                              Recuérdame
+                            </label>
+
+                            <button type="submit" class="btn btn-info btn-block btn-md btn-bold mt-2 mb-4">
+                              Acceder
+                            </button>
+                          </div>
+                        </form>
+
+
+                        <div class="form-row">
+                          <div class="col-12 col-md-6 offset-md-3 d-flex flex-column align-items-center justify-content-center">
+
+                            <hr class="brc-default-m4 mt-0 mb-2 w-100" />
+
+                            <div class="p-0 px-md-2 text-dark-tp3 my-3">
+                              ¿No eres miembro?
+                              <a class="text-success-m2 text-600 mx-1" data-toggle="tab" data-target="#id-tab-signup" href="#">
+                                Date de alta
+                              </a>
+                            </div>
+
+                            {#<hr class="brc-default-m4 w-100 mb-2" />
+                            <div class="mt-n4 bgc-white-tp2 px-3 py-1 text-default-d1 text-90">Or Get Started Using</div>
+
+                            <div class="my-2">
+                              <button type="button" class="btn btn-bgc-white btn-lighter-primary btn-h-primary btn-a-primary border-2 radius-round btn-lg mx-1">
+                                <i class="fab fa-facebook-f text-110"></i>
+                              </button>
+
+                              <button type="button" class="btn btn-bgc-white btn-lighter-blue btn-h-info btn-a-info border-2 radius-round btn-lg px-25 mx-1">
+                                <i class="fab fa-twitter text-110"></i>
+                              </button>
+
+                              <button type="button" class="btn btn-bgc-white btn-lighter-red btn-h-red btn-a-red border-2 radius-round btn-lg px-25 mx-1">
+                                <i class="fab fa-google text-110"></i>
+                              </button>
+                            </div>#}
+
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="tab-pane mh-100 px-3 px-lg-0 pb-3" id="id-tab-signup" data-swipe-prev="#id-tab-login">
+                        <div class="position-tl ml-3 mt-3 mt-lg-0">
+                          <a href="#" class="btn btn-light-default bg-transparent" data-toggle="tab" data-target="#id-tab-login"><i class="fa fa-arrow-left"></i></a>
+                        </div>
+
+                        <div class="d-none d-lg-block col-md-6 offset-md-3 mt-lg-4 px-0">
+                          <h4 class="text-dark-tp4 border-b-1 brc-grey-l1 pb-1 text-130">
+                            <i class="fa fa-user text-purple-m1 mr-1"></i>
+                            Crea una cuenta
+                          </h4>
+                        </div>
+
+                        <div class="d-lg-none text-secondary-m1 my-4 text-center">
+                          <img src="/images/logo.jpg" style="width: 100%;">
+
+                          Crea una cuenta
+                        </div>
+                          
+                        <br>  
+                        <div id="signupError" style="display: none;">
+                            <div role="alert" class="offset-md-3 col-md-6 alert alert-danger bgc-danger-l3 brc-danger-m2 border-2 d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle mr-3 fa-2x text-danger"></i>
+                                <div class="text-dark-tp3" id="signupErrorText"></div>
+                            </div>
+                        </div>
+
+                        <form id="signupForm" data-url="{{ path("newPublicUserSend") }}" class="form-row mt-4">
+                            <div class="form-group col-md-6 offset-md-3 mt-1">
+                            <div class="d-flex align-items-center input-floating-label text-success-m1 brc-success-m2">
+                                <input type="text" required class="form-control form-control-lg pr-4 shadow-none" id="id-signup-name" name="id-signup-name" autocomplete="off" />
+                              <i class="fa fa-user text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="id-signup-username">Nombre Completo</label>
+                            </div>
+                          </div>
+                            
+                          <div class="form-group col-md-6 offset-md-3">
+                            <div class="d-flex align-items-center input-floating-label text-success-m1 brc-success-m2">
+                              <input type="email" required class="form-control form-control-lg pr-4 shadow-none" id="id-signup-email" name="id-signup-email" autocomplete="off" />
+                              <i class="fa fa-envelope text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="id-signup-email">Email</label>
+                            </div>
+                          </div>                         
+
+                          <div class="form-group col-md-6 offset-md-3 mt-1">
+                            <div class="d-flex align-items-center input-floating-label text-success-m1 brc-success-m2">
+                              <input type="password" required class="form-control form-control-lg pr-4 shadow-none" id="id-signup-password" name="id-signup-password" autocomplete="off" />
+                              <i class="fa fa-key text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="id-signup-password">Contraseña</label>
+                            </div>
+                          </div>
+
+                          <div class="form-group col-md-6 offset-md-3 mt-1">
+                            <div class="d-flex align-items-center input-floating-label text-success-m1 brc-success-m2">
+                              <input type="password" required class="form-control form-control-lg pr-4 shadow-none" id="id-signup-password2" name="id-signup-password2" autocomplete="off" />
+                              <i class="fas fa-sync-alt text-grey-m2 ml-n4"></i>
+                              <label class="floating-label text-grey-l1 text-100 ml-n3" for="id-signup-password2">Confirma Contraseña</label>
+                            </div>
+                          </div>
+
+                          {#<div class=" form-group col-md-6 offset-md-3 my-2">
+                            <label class="text-secondary-m3 text-110 mb-25">
+                              Choose membership type
+                            </label>
+                            <div class="row d-flex mx-1 mx-lg-0 btn-group btn-group-toggle" data-toggle="buttons">
+
+                              <div class="col-12 offset-sm-2 col-sm-3 px-1">
+                                <label class="shadow-sm d-style border-1 w-100 my-1 py-3 bgc-white-tp2 btn-brc-tp btn btn-light-secondary btn-h-light-primary btn-a-light-primary radius-3">
+                                  <input type="radio" name="payments" id="payments1" autocomplete="off" class="invisible pos-abs">
+
+                                  <span class="d-flex flex-column align-items-center">
+                                        <div class="font-bolder flex-grow-1">
+                                            Free
+                                        </div>
+                                    </span>
+
+                                </label>
+                              </div>
+
+                              <div class="col-12 col-sm-6 px-1">
+                                <label class="shadow-sm d-style border-2 w-100 my-1 py-3 bgc-white-tp2 btn-brc-tp btn btn-light-secondary btn-h-light-success btn-a-light-success radius-3">
+                                  <input type="radio" name="payments" id="payments2" autocomplete="off" class="invisible pos-abs">
+                                  <span class="d-flex flex-column align-items-center">
+
+                                        <span class="position-tr mr-2">
+                                            <span class="v-active pos-abs">
+                                                <i class="fa fa-crown text-orange text-110"></i>
+                                            </span>
+                                  <span class="v-n-active">
+                                                <i class="fa fa-crown text-secondary-l3 text-110"></i>
+                                            </span>
+                                  </span>
+
+                                  <div class="font-bolder flex-grow-1">
+                                    Premium
+                                  </div>
+                                  </span>
+                                </label>
+                              </div>
+
+                            </div>
+
+                          </div>#}
+
+                          <div class="form-group col-md-6 offset-md-3 mt-2">
+                            <label class="d-inline-block mt-3 mb-0 text-secondary-d2">
+                              <input type="checkbox" required class="mr-1" id="id-signup-agree" name="id-signup-agree" />
+                              <span class="text-secondary-d2">He leido y acepto los <a href="{{ path('terms') }}" class="text-blue">términos de uso</a></span>
+                            </label>
+
+                            <button type="submit" class="btn btn-success btn-block btn-md btn-bold mt-2 mb-3">
+                              Darme de alta
+                            </button>
+                          </div>
+                        </form>
+
+
+                        <div class="form-row w-100">
+                          <div class="col-12 col-md-6 offset-md-3 d-flex flex-column align-items-center justify-content-center">
+
+                            <hr class="brc-default-m4 mt-0 mb-2 w-100" />
+
+                            <div class="p-0 px-md-2 text-dark-tp4 my-3">
+                              ¿Ya eres miembro?
+                              <a class="text-blue-m2 text-600 mx-1" data-toggle="tab" data-target="#id-tab-login" href="#">
+                                Accede aquí
+                              </a>
+                            </div>
+
+                            {#<hr class="brc-default-m4 w-100 mb-2" />
+                            <div class="mt-n4 bgc-white-tp2 px-3 py-1 text-default-d1 text-90">Or Register Using</div>
+
+                            <div class="mt-2 mb-3">
+                              <button type="button" class="btn btn-primary border-2 radius-round btn-lg mx-1">
+                                <i class="fab fa-facebook-f text-110"></i>
+                              </button>
+
+                              <button type="button" class="btn btn-blue border-2 radius-round btn-lg px-25 mx-1">
+                                <i class="fab fa-twitter text-110"></i>
+                              </button>
+
+                              <button type="button" class="btn btn-danger border-2 radius-round btn-lg px-25 mx-1">
+                                <i class="fab fa-google text-110"></i>
+                              </button>
+                            </div>#}
+
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="tab-pane mh-100 px-3 px-lg-0 pb-3" id="id-tab-forgot" data-swipe-prev="#id-tab-login">
+                        <div class="position-tl ml-3 mt-2">
+                          <a href="#" class="btn btn-light-default bg-transparent" data-toggle="tab" data-target="#id-tab-login"><i class="fa fa-arrow-left"></i></a>
+                        </div>
+
+                        <div class="col-md-6 offset-md-3 mt-5 px-0">
+                          <h4 class="pt-4 pt-md-0 text-dark-tp4 border-b-1 brc-grey-l1 pb-1 text-130">
+                            <i class="fa fa-key text-brown-m2 mr-1"></i>
+                            Recuperar contraseña
+                          </h4>
+                        </div>
+
+                        <form class="form-row mt-4" id="restoreForm" data-url="{{ path('app_changePasswordRequest') }}">
+                          <div class="form-group col-md-6 offset-md-3">
+                            <label class="text-secondary-m1 mb-3">
+                              Escribe tu dirección de e-mail y te enviarémos las instruciones para cambiar la contraseña:
+                            </label>
+                            <div class="d-flex align-items-center">
+                              <input type="email" class="form-control form-control-lg pr-4 shadow-none" id="id-recover-email" placeholder="E-mail" autocomplete="off" required />
+                              <i class="fa fa-envelope text-grey-m2 ml-n4"></i>
+                            </div>
+                          </div>
+
+
+                          <div class="form-group col-md-6 offset-md-3 mt-1">
+                            <button type="submit" class="btn btn-warning btn-block btn-md btn-bold mt-2 mb-4">
+                              Continuar
+                            </button>
+                          </div>
+                        </form>
+
+
+                        <div class="form-row w-100">
+                          <div class="col-12 col-md-6 offset-md-3 d-flex flex-column align-items-center justify-content-center">
+
+                            <hr class="brc-default-m4 mt-0 mb-2 w-100" />
+
+                            <div class="p-0 px-md-2 text-dark-tp4 my-3">
+                              <a class="text-blue-m2 text-600" data-toggle="tab" data-target="#id-tab-login" href="#">
+                                Volver al Login
+                              </a>
+                            </div>
+
+
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+                          
+            <div class="modal fade" id="restoreModal" tabindex="-1" role="dialog" aria-labelledby="restoreModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content border-width-0 border-t-4 brc-success-m2 px-3">
+
+                        <div class="modal-header py-2">
+                            <i class="bgc-white fas fa-check mb-n4 mx-auto fa-3x text-success-m2"></i>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            <p class="text-success-d1 text-130 mt-3">
+                                Revisa tu correo ...
+                            </p>
+                            <p class="text-secondary-m2 text-105">
+                                Si tu e-mail está en nuestra base de datos, te hemos enviado instrucciones para cambiar tu contraseña a tu buzón de correos
+                            </p>
+                        </div>
+
+                        <div class="modal-footer bg-white justify-content-center px-0 py-3">
+                            <button type="button" class="btn btn-md px-2 px-md-4 btn-success" data-dismiss="modal">
+                                Entendido                                
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+                          
+            <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content border-width-0 border-t-4 brc-success-m2 px-3">
+
+                        <div class="modal-header py-2">
+                            <i class="bgc-white fas fa-check mb-n4 mx-auto fa-3x text-success-m2"></i>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            <p class="text-success-d1 text-130 mt-3">
+                                Revisa tu correo ...
+                            </p>
+                            <p class="text-secondary-m2 text-105">
+                                Te hemos enviado un e-mail para que valides tu nueva cuenta y puedas acceder a tu panel.
+                            </p>
+                        </div>
+
+                        <div class="modal-footer bg-white justify-content-center px-0 py-3">
+                            <button type="button" class="btn btn-md px-2 px-md-4 btn-success" data-dismiss="modal">
+                                Entendido                                
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-lg-none my-3 text-white-tp1 text-center">
+              {{ getCompany().name|default('Nonamed') }} &copy; {{ 'now'|date('Y') }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js/dist/umd/popper.min.js"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>      
+      <script type="text/javascript" src="/js/admin/template/ace.min.js"></script>
+      <script type="text/javascript" src="/js/admin/login.js"></script>            
+    </div>
+  </body>
+</html>

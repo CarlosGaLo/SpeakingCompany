@@ -1,0 +1,635 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'course', 'courseIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="/js/admin/userList.js"></script>     
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            {{ course.title }}
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Vista general
+            </small>
+        </h1>
+        
+        <div class="page-tools">
+            <a href="{{ path('course_index') }}">Volver al listado</a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+    
+    {% if course.disabled %}
+        <div class="alert bgc-red-l4 border-none border-l-4 brc-red-tp1 radius-0 text-dark-tp2">
+            <h4 class="text-danger-d1 text-130">Curso desactivado</h4>
+            Este curso está desactivado y no es visible para los usuarios.
+        </div>
+    {% endif %}
+    
+    <div class="col-12 mt-3 mt-md-0">
+                <div class="card dcard h-100"> 
+                  <div class="card-body p-0">
+                      
+                      
+                    <div class="sticky-nav"><div class="sticky-trigger"></div>
+                      <div class="position-tr w-100 border-t-4 brc-blue-m2 radius-2 d-md-none"></div>
+
+                      <ul id="profile-tabs" class="nav nav-tabs-scroll is-scrollable nav-tabs nav-tabs-simple p-1px pl-25 bgc-secondary-l4 border-b-1 brc-dark-l3 radius-t-1" role="tablist">
+                        <li class="nav-item mr-2 mr-lg-3">
+                          <a class="d-style nav-link px-2 py-35 brc-primary-tp1 {{ (tab == 'index')?'active' }}" data-toggle="tab" href="#profile-tab-overview" role="tab" aria-controls="profile-tab-overview" aria-selected="true">
+                            <span class="d-n-active text-dark-l1">Descripción</span>
+                            <span class="d-active text-dark-m3">Descripción</span>
+                          </a>
+                        </li>
+
+                        <li class="nav-item mr-2 mr-lg-3">
+                          <a class="d-style nav-link px-2 py-35 brc-primary-tp1 pr-45 {{ (tab == 'modules')?'active' }}" data-toggle="tab" href="#profile-tab-activity" role="tab" aria-controls="profile-tab-activity" aria-selected="false">
+                            <span class="d-n-active text-dark-l1">Módulos</span>
+                            <span class="d-active text-dark-m3">Módulos</span>
+                            <span class="pos-abs ml-15 badge bgc-red-d2 text-white radius-3 text-85">{{ course.modules|length }}</span>
+                          </a>
+                        </li>
+
+                        {#<li class="nav-item mr-2 mr-lg-3">
+                          <a class="d-style nav-link px-2 py-35 brc-primary-tp1" data-toggle="tab" href="#profile-tab-timeline" role="tab" aria-controls="profile-tab-timeline" aria-selected="false">
+                            <span class="d-n-active text-dark-l1">3. Timeline</span>
+                            <span class="d-active text-dark-m3">3. Timeline</span>
+                          </a>
+                        </li>
+
+                        <li class="nav-item mr-2 mr-lg-3">
+                          <a class="d-style nav-link px-2 py-35 brc-primary-tp1" data-toggle="tab" href="#profile-tab-edit" role="tab" aria-controls="profile-tab-edit" aria-selected="false">
+                            <span class="d-n-active text-dark-l1">4. Edit Info</span>
+                            <span class="d-active text-dark-m3">4. Edit Info</span>
+                          </a>
+                        </li>#}
+                      </ul>
+                    </div><!-- /.sticky-nav-md -->
+
+
+                    <div class="tab-content px-0 tab-sliding flex-grow-1 border-0">
+
+                      <div class="tab-pane show px-1 px-md-2 px-lg-4 {{ (tab == 'index')?'active' }}" id="profile-tab-overview">
+                        <div class="row mt-1">
+
+                          <div class="col-12 px-4 mt-3">                              
+                              
+
+                            <h4 class="mt-2 text-dark-m3 text-130">
+                              <i class="fa fa-pen-alt text-85 text-purple-d1 w-3"></i>
+                              Descripción
+                            </h4>
+
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start mt-3 mb-2 text-95 pl-3">
+                              <div class="d-style order-first  mx-2 radius-2 overflow-hidden mb-3 mb-sm-0">
+                                <img {% if not course.headerImage %}data-src="holder.js/150x150?theme=gray&amp;text=Sin imagen"{% endif %} src="{{ asset('uploads/courses/' ~ course.headerImage) }}" style="width: 150px; height: 150px;">
+                              </div>
+                              <div class="mt-2 mt-sm-0 flex-grow-1 text-dark-m2">                                
+                                <p>
+                                  {{ course.description }}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="col-12 px-4 mt-3">
+                            <h4 class="text-dark-m3 text-140">
+                              <i class="far fa-lightbulb text-danger-d1 text-85 w-3"></i>
+                              Características
+                            </h4>
+
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start mt-3 mb-2 text-95 pl-3">
+                              <div class="mt-2 mt-sm-0 flex-grow-1 text-dark-m2">                                
+                                <p>
+                                    <strong>Nivel:</strong> {{ course.getLevelText }}
+                                    <br>
+                                    <strong>Precio: </strong> {{ course.price|default("Gratis") }}
+                                    
+                                    <br>
+                                    <strong>Creado: </strong> {{ course.createDate ? course.createDate|date('d/m/Y') : '' }} {% if course.modifyDate|default(null) and course.createDate != course.modifyDate %}}<small class="text-muted">(Mod. {{ course.modifyDate ? course.modifyDate|date('d/m/Y') : '' }})</small>{% endif %}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="row mt-5">
+                          <div class="col-12 px-4 mb-3">
+
+                            <h4 class="text-dark-m3 text-140">
+                              <i class="fa fa-info text-blue mr-1 w-2"></i>
+                              Más información
+                            </h4>
+
+                              <div class="d-flex justify-content-center my-3 flex-wrap flex-equal">
+                              <div class="dcard bgc-h-primary-l4 brc-h-primary-m4 px-3 py-2 rounded text-center mx-1 mb-1">
+                                <span class="text-170 text-dark-tp3"><span class="pos-abs ml-n3">~</span>48k</span>
+                                <br>
+                                <span class="text-90 text-dark-tp2">
+                                            Usuarios
+                                        </span>
+                              </div>
+
+                              <div class="dcard bgc-h-primary-l4 brc-h-primary-m4 px-3 py-2 rounded text-center mx-1 mb-1">
+                                <span class="text-170 text-dark-tp3">132</span>
+                                <br>
+                                <span class="text-90 text-dark-tp2">
+                                            Tests
+                                        </span>
+                              </div>
+
+                              <div class="dcard bgc-h-primary-l4 brc-h-primary-m4 px-3 py-2 rounded text-center mx-1 mb-1">
+                                <span class="text-170 text-dark-tp3">9</span>
+                                <br>
+                                <span class="text-90 text-dark-tp2">
+                                            Vídeos
+                                        </span>
+                              </div>
+
+                              <div class="dcard bgc-h-primary-l4 brc-h-primary-m4 py-2 rounded text-center mx-1 mb-1">
+                                <span class="text-170 text-primary-d1"><span class="pos-abs ml-n3">~</span>11k</span>
+                                <br>
+                                <span class="text-90 text-dark-tp2">
+                                            Ingresos
+                                        </span>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                                
+                        <div class="row mt-5">
+                          <div class="col-12 px-4 mb-3">
+
+                            <h4 class="text-dark-m3 text-140">
+                              <i class="fa fa-cog mr-1 w-2"></i>
+                              Gestión del curso
+                            </h4>
+
+                              <div class="d-flex justify-content-center my-3 flex-wrap flex-equal">
+                                  {% if course.disabled %}
+                                  <a href="{{ path('course_activate', {'id': course.id}) }}" class="btn btn-app btn-light-success my-1" id="btn-app-1" style="margin-right: 20px;">
+                                      <i class="d-block h-6 fa fa-eye text-190"></i>
+                                      Activar curso                                      
+                                  </a>
+                                  {% else %}
+                                  <a href="{{ path('course_deactivate', {'id': course.id}) }}" class="btn btn-app btn-lighter-red my-1" id="btn-app-1" style="margin-right: 20px;">
+                                      <i class="d-block h-6 fa fa-eye-slash text-190"></i>
+                                      Desactivar curso
+                                  </a>
+                                  {% endif %}
+                                  
+                                  <a href="{{ path('course_edit', {'id': course.id}) }}" class="btn btn-app btn-primary my-1" id="btn-app-1">
+                                      <i class="d-block h-6 fa fa-edit text-190"></i>
+                                      Editar curso
+                                  </a>
+                                  
+                                  <div class="my-1"></div>
+                                  
+                                  <button type="button" class="btn btn-app btn-danger my-1" id="btn-app-1">
+                                      <i class="d-block h-6 fa fa-trash-alt text-190"></i>
+                                      Eliminar
+                                      <span class="badge bgc-orange-d1 text-white badge-sm position-tl m-n2 badge-pill text-70 border-1 brc-black-tp8"><i class="d-block fa fa-exclamation-triangle "></i></span>
+                                  </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane px-1 px-md-2 px-lg-3 {{ (tab == 'modules')?'active' }}" id="profile-tab-activity">
+                        <div>
+                          <div class="d-flex m-3">
+                            <h4 class="text-dark-tp4 text-130 p-0 m-0">
+                              Modulos
+                            </h4>
+
+                              <a href="{{ path('course_module_new', {'id': course.id}) }}" class="ml-auto btn btn-sm btn-light-primary btn-brc-tp btn-bold border-1">
+                              Nuevo módulo
+                            </a>
+                          </div>
+                            <hr class="border-dotted mx-3">
+                          
+                            <div class="px-lg-3">
+                            {% for module in course.modules %}
+                                <div class="mb-2 text-dark-m3 text-95 border-l-3 {{ (module.moduleVideos|length or module.moduleTexts|length or module.moduleTests|length)?'brc-success-m1':'brc-danger-m1' }} pl-3">
+                                    <div class="d-flex align-items-start">   
+                                        <img {% if not course.headerImage %}data-src="holder.js/100x100?theme=gray&amp;text=Sin imagen"{% endif %} class="radius-1 mb-1 mb-sm-0 mr-3 d-none d-sm-block" src="{{ asset('uploads/modules/images/' ~ module.headerImage) }}" style="width: 100px; height: 100px;">
+                                        
+                                        <div class="mx-2">                                            
+                                            <strong>{{ module.title }}</strong><br>
+                                            {{ module.description }}<hr>
+                                            
+                                            <span class="text-danger-m1">{{ module.moduleVideos|length }} <i class="fa fa-film text-100"></i></span>&nbsp;&nbsp;&nbsp;
+                                            <span class="text-blue-m1">{{ module.moduleTexts|length }} <i class="fa fa-file-alt text-100"></i></span>&nbsp;&nbsp;&nbsp;
+                                            <span class="text-orange-m1">{{ module.moduleTests|length }} <i class="fa fa-tasks text-100"></i></span>
+                                        </div>
+
+                                        <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            <a href="{{ path("course_module_edit", {'id':course.id, 'moduleId': module.id}) }}" class="btn btn-xs btn-info">
+                                                <i class="fa fa-edit text-110"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr class="brc-grey-l3">
+                            {% else %}
+                                <div role="alert" class="alert alert-warning bgc-warning-l4 brc-warning-m3 border-2 d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle mr-3 fa-2x text-orange"></i>
+
+                                    <div class="text-dark-tp2">
+                                        No hay modulos creados, un curso debe tener al menos un módulo creado para poder activarse.
+                                    </div>                                   
+                                </div>
+                            {% endfor %}
+                            </div>
+                            
+                          {#<hr class="border-dotted mx-3">
+                          
+                          <div class="px-lg-3">
+                            <div class="mb-2 text-dark-m3 text-95 border-l-3 brc-blue-m1 pl-3">
+                              <div class="d-flex align-items-start">
+                                <img alt="Amy's avatar" src="assets/image/avatar/avatar5.jpg" class="border-1 brc-success-m1 radius-round p-1px w-5">
+
+                                <div class="mx-2">
+                                  <span class="font-bolder text-blue-d1">
+                                                Amy
+                                            </span>
+                                  changed her profile photo. <a href="#" class="text-blue">Take a look</a>
+                                </div>
+
+                                <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            4 min ago
+                                        </span>
+                              </div>
+                            </div>
+                            <hr class="brc-grey-l3">
+                            <div class="mb-2 text-dark-m3 text-95 border-l-3 brc-success-m1 pl-3">
+                              <div class="d-flex align-items-start">
+                                <img alt="Susan's avatar" src="assets/image/avatar/avatar3.png" class="border-1 brc-success-m1 radius-round p-1px w-5">
+
+                                <div class="mx-2">
+                                  <span class="font-bolder text-blue-d1">
+                                                Susan
+                                            </span>
+                                  is now friends with Amy
+                                </div>
+
+                                <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            20 min ago
+                                        </span>
+                              </div>
+                            </div>
+                            <hr class="brc-grey-l3">
+                            <div class="mb-2 text-dark-m3 text-95 border-l-3 brc-warning pl-3">
+                              <div class="d-flex align-items-start">
+                                <img alt="Amy's avatar" src="assets/image/avatar/avatar5.jpg" class="border-1 brc-success-m1 radius-round p-1px w-5">
+
+                                <div class="mx-2">
+                                  <span class="font-bolder text-blue-d1">
+                                                Amy
+                                            </span>
+                                  upgraded her membership plan
+                                </div>
+
+                                <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            1 hour ago
+                                        </span>
+                              </div>
+                            </div>
+                            <hr class="brc-grey-l3">
+                            <div class="mb-2 text-dark-m3 text-95 border-l-3 brc-pink-m1 pl-3">
+                              <div class="d-flex align-items-start">
+                                <img alt="David's avatar" src="assets/image/avatar/avatar4.png" class="border-1 brc-success-m1 radius-round p-1px w-5">
+
+                                <div class="mx-2">
+                                  <span class="font-bolder text-blue-d1">
+                                                David
+                                            </span>
+                                  left a comment on Amy's product review
+                                </div>
+
+                                <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            1 hour ago
+                                        </span>
+                              </div>
+                            </div>
+                            <hr class="brc-grey-l3">
+                            <div class="mb-2 text-dark-m3 text-95 border-l-3 brc-purple-m1 pl-3">
+                              <div class="d-flex align-items-start">
+                                <img alt="Amy's avatar" src="assets/image/avatar/avatar5.jpg" class="border-1 brc-success-m1 radius-round p-1px w-5">
+
+                                <div class="mx-2">
+                                  <span class="font-bolder text-blue-d1">
+                                                Amy
+                                            </span>
+                                  logged in to her account
+                                </div>
+
+                                <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            2 hours ago
+                                        </span>
+                              </div>
+                            </div>
+                            <hr class="brc-grey-l3">
+                          </div>#}
+                        </div>
+                      </div>
+
+
+
+                      <!-- timeline tab -->
+                      <div class="tab-pane px-1 px-md-2 px-lg-3" id="profile-tab-timeline">
+                        <div class="px-3 text-grey-m1 text-95">
+
+                          <div class="mt-4 mb-2">
+                            <span class="badge badge-info ml-n1">Today</span>
+                          </div>
+
+                          <div class="mt-1 pl-1 pos-rel">
+                            <div class="position-tl h-90 border-l-2 brc-secondary-l1 ml-2 ml-lg-25 mt-2"></div>
+
+                            <div class="row pos-rel">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-success-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">10:10 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-bookmark text-success-m3 w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Alex
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                bookmarked your post
+                                            </span>
+
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-blue-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">9:35 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-pen text-blue-m2 w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Susan
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                reviewed a product
+                                            </span>
+
+                                <a href="#" class="text-blue-d2">
+                                  Read
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-purple-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">4:19 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-book text-purple w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  John
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                started a new course
+                                            </span>
+
+                                <a href="#" class="text-blue-d2">
+                                  Enroll
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-warning-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">11:40 am</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-image text-warning w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Alex
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                posted a new photo
+                                            </span>
+
+                                <a href="#" class="text-blue-d2">
+                                  View
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-pink-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">9:00 am</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-user text-pink w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Max
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                became friends with you
+                                            </span>
+
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <div class="mt-4 mb-2">
+                            <span class="badge badge-secondary ml-n1">Yesterday</span>
+                          </div>
+
+                          <div class="mt-1 pl-1 pos-rel">
+                            <div class="position-tl h-90 border-l-2 brc-secondary-l1 ml-2 ml-lg-25 mt-2"></div>
+
+                            <div class="row pos-rel">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-purple-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">6:11 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-microphone text-purple-m1 w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Freddie
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                sang a new song
+                                            </span>
+
+                                <a href="#" class="text-blue-d2">
+                                  Listen
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-success-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">5:35 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-pen text-success-m3 w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Robin
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                read a new novel
+                                            </span>
+
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-blue-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">4:20 pm</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-graduation-cap text-blue-m1 w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Katy
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                finished a long course
+                                            </span>
+
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-warning-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">10:15 am</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-user text-warning w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Philip
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                update profile photo
+                                            </span>
+
+                                <a href="#" class="text-blue-d2">
+                                  View
+                                </a>
+                              </div>
+                            </div>
+                            <div class="row pos-rel my-3">
+                              <div class="position-tl mt-1 ml-25 w-2 h-2 bgc-white radius-round border-3 brc-pink-m1"></div>
+
+                              <div class="col-4 ml-4 col-lg-3 ml-lg-0 text-90 text-grey-m2 text-left text-lg-center">9:35 am</div>
+                              <div class="col-12 ml-4 col-lg-9 ml-lg-n4 pb-2 border-b-1 brc-grey-l4">
+                                <i class="fa fa-plane text-pink w-2 text-center mr-1"></i>
+                                <a href="#" class="text-primary-d1 text-600">
+                                  Melissa
+                                </a>
+
+                                <span class="text-dark-m3">
+                                                is going on vacation
+                                            </span>
+
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div><!-- /.tab-pane -->
+
+
+
+                      <!-- profile edit tab -->
+                      <div class="tab-pane px-1 px-md-2 px-lg-4" id="profile-tab-edit">
+                        <h4 class="bgc-secondary-l4 text-dark-tp3 text-center text-140 mb-3 mx-3 py-25">Update profile info</h4>
+
+                        <div class="row">
+                          <div class="col-12 col-lg-10 offset-lg-1 mt-3">
+
+                            <form class="text-grey-d1 text-95" autocomplete="off">
+
+                              <div class="form-group row mx-0">
+                                <div class="offset-sm-4 offset-xl-3 col-sm-8 col-lg-6">
+                                  <label class="ace-file-input ace-file-multiple"><input type="file" class="form-control" id="id-field0" accept=".gif,.jpg,.jpeg,.png,.webp,.svg"><div class="ace-file-container d-flex flex-column border-1 border-dashed brc-grey-m4 brc-h-warning-m1"><div class="ace-file-placeholder h-100">
+<span class="ace-file-icon align-self-center mx-2px">
+  <i class="fa fa-user fa-3x text-green-m3 my-2"></i>
+</span>
+<span class="ace-file-name text-125 text-600 text-grey-l1 my-2">
+  Drop profile image or click to choose
+</span></div></div><a title="" class="remove position-tr bgc-white text-danger mt-n25 mr-n25 w-4 h-4 text-center pt-2px radius-round border-2 brc-grey-m4 brc-h-danger-m3" href="#"><i class="fa fa-times"></i></a></label>
+                                </div>
+                              </div>
+
+                              <div class="form-group row mx-0">
+                                <label for="id-field1" class="col-sm-4 col-xl-3 col-form-label text-sm-right">Full Name</label>
+                                <div class="col-sm-8 col-lg-6">
+                                  <input type="text" class="form-control brc-on-focus brc-success-m2" id="id-field1" placeholder="e.g. Alex Doe">
+                                </div>
+                              </div>
+
+                              <div class="form-group row mx-0">
+                                <label for="id-field2" class="col-sm-4 col-xl-3 col-form-label text-sm-right">Email Address</label>
+                                <div class="col-sm-8 col-lg-6">
+                                  <input type="email" class="form-control brc-on-focus brc-success-m2" id="id-field2" placeholder="Enter your email address here">
+                                </div>
+                              </div>
+
+
+                              <div class="form-group row mt-45 mx-0">
+                                <label for="id-field3" class="col-sm-4 col-xl-3 col-form-label text-sm-right">Phone Number</label>
+                                <div class="col-sm-8 col-lg-6">
+                                  <input type="text" class="form-control brc-on-focus brc-success-m2" id="id-field3" placeholder="e.g. (+44) 3482342">
+                                </div>
+                              </div>
+
+                              <div class="form-group row mx-0">
+                                <label for="id-field4" class="col-sm-4 col-xl-3 col-form-label text-sm-right">Location</label>
+                                <div class="col-sm-8 col-lg-6">
+                                  <input type="text" class="form-control brc-on-focus brc-success-m2" id="id-field4" placeholder="">
+                                </div>
+                              </div>
+                            </form>
+
+                          </div>
+
+
+
+                          <div class="col-12">
+                            <hr class="border-double brc-dark-l3">
+
+                            <div class="form-group text-center mt-4 mb-3">
+                              <button type="button" class="btn btn-outline-secondary radius-1 px-3 mx-1">
+                                Cancel
+                              </button>
+
+                              <button type="button" class="btn btn-outline-green radius-1 px-4 mx-1">
+                                Save Changes
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div><!-- /.tab-pane -->
+
+                    </div><!-- /.tab-content -->
+
+                  </div>
+                </div><!-- /.card -->
+
+              </div>            
+{% endblock %}

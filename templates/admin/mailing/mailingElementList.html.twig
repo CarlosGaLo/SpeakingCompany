@@ -1,0 +1,118 @@
+<table id="mailingElementList" class="mb-0 table table-borderless table-bordered-x brc-secondary-l3 text-dark-m2 radius-1 overflow-hidden"  data-submit-url="{{ path('mailing_submitMailingElement') }}">
+    <thead class="text-dark-tp3 bgc-grey-l4 text-90 border-b-1 brc-transparent">
+        <tr>
+            <th class="text-center pr-0">
+                <label class="py-0">
+                    <input type="checkbox" class="align-bottom mb-n1 border-2 text-dark-m3">
+                </label>
+            </th>
+
+            <th>
+                Correo
+            </th>
+
+            <th>
+                Nombre
+            </th>
+
+            <th class="d-none d-sm-table-cell">
+                Mails
+            </th>
+
+            <th class="d-none d-sm-table-cell">
+                Último envío
+            </th>                                   
+
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody class="mt-1">
+        {% for mailElement in mailElements %}
+        <tr class="bgc-h-yellow-l4 d-style mailElement_row" id="mailElement_row_{{ mailElement.id }}" data-delete-url="{{ path('mailing_deleteMailingElement', {'id': mailElement.id }) }}" data-submit-url="{{ path('mailing_submitMailingElement') }}">
+            <td class="text-center pr-0 pos-rel">
+                <div class="position-tl h-100 ml-n1px border-l-4 brc-orange-m1 v-hover"></div>
+                <div class="position-tl h-100 ml-n1px border-l-4 brc-success-m1 v-active"></div>
+
+                <label>
+                    <input type="checkbox" id="mailElementInput_{{ mailElement.id }}" class="mailElementInput align-middle" data-id="{{ mailElement.id }}">
+                </label>
+            </td>
+
+            <td class="text-600">
+                {{ mailElement.mail }}
+            </td>
+
+            <td>
+                {% if mailElement.testMail %}<i title="Es e-mail de prueba" class="fa fa-exclamation-triangle text-100 p-1 text-danger"></i> {% endif %}{{ mailElement.name }}
+            </td>
+
+            <td class="d-none d-sm-table-cell text-grey-d1">
+                --
+            </td>
+
+            <td class="d-none d-sm-table-cell text-grey text-95">
+                --
+            </td>                                   
+
+            <td style="text-align: right;">                
+                <div class="d-none d-lg-flex">
+                    <a href="#" 
+                       data-name="{{ mailElement.name }}" 
+                       data-surname1="{{ mailElement.surname }}"
+                       data-surname2="{{ mailElement.surname2 }}"
+                       data-mail="{{ mailElement.mail }}" 
+                       data-phone="{{ mailElement.phone }}" 
+                       data-last-course="{{ mailElement.lastCourse }}"
+                       data-origin="{{ mailElement.origin }}" 
+                       data-birthday="{% if mailElement.birthday %}{{ mailElement.birthday|date('Y-m-d') }}{% endif %}"
+                       data-type-rol="{% if mailElement.rolType %}{{ mailElement.rolType.id }}{% endif %}"
+                       data-test-mail="{{ mailElement.testMail }}"
+                       data-id="{{ mailElement.id }}" class="modifyMailEleBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-success btn-a-lighter-success">
+                        <i class="fa fa-pencil-alt"></i>
+                    </a>
+
+                    <a href="#" data-id="{{ mailElement.id }}" class="deleteMailEleBtn mx-2px btn radius-1 border-2 btn-xs btn-brc-tp btn-light-secondary btn-h-lighter-danger btn-a-lighter-danger">
+                        <i class="fa fa-trash-alt"></i>
+                    </a>
+
+                </div>
+                
+                <div class="dropdown d-inline-block d-lg-none dd-backdrop dd-backdrop-none-lg">
+                    <a href="#" class="btn btn-default btn-xs py-15 radius-round dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-cog"></i>
+                    </a>
+
+                    <div class="dropdown-menu dd-slide-up dd-slide-none-lg">
+                        <div class="dropdown-inner">
+                            <div class="dropdown-header text-100 text-secondary-d1 border-b-1 brc-secondary-l2 text-600 mb-2">
+                                {{ mailElement.mail }}
+                            </div>
+                            <a href="#" class="dropdown-item modifyMailEleBtn" 
+                                data-name="{{ mailElement.name }}" 
+                                data-surname1="{{ mailElement.surname }}"
+                                data-surname2="{{ mailElement.surname2 }}"
+                                data-mail="{{ mailElement.mail }}" 
+                                data-phone="{{ mailElement.phone }}" 
+                                data-last-course="{{ mailElement.lastCourse }}" 
+                                data-origin="{{ mailElement.origin }}" 
+                                data-birthday="{% if mailElement.birthday %}{{ mailElement.birthday|date('Y-m-d') }}{% endif %}"
+                                data-type-rol="{% if mailElement.rolType %}{{ mailElement.rolType.id }}{% endif %}"
+                                data-test-mail="{{ mailElement.testMail }}"
+                                data-id="{{ mailElement.id }}">
+                                <i class="fa fa-pencil-alt text-blue mr-1 p-2 w-4"></i>
+                                Editar
+                            </a>
+                            <a href="#" class="dropdown-item deleteMailEleBtn" data-id="{{ mailElement.id }}">
+                                <i class="fa fa-trash-alt text-danger-m1 mr-1 p-2 w-4"></i>
+                                Eliminar
+                            </a>                                                    
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr> 
+        {% endfor %}
+    </tbody>
+</table>

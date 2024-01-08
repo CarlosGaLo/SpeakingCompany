@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="{{ 'META_DESCRIPTION'|websiteParam }}" />
+        <meta name="keywords" content="{{ 'META_KEYWORDS'|websiteParam }}" />
+        <meta name="author" content="" />
+        <title>{{ ('META_TITLE'|websiteParam)?('META_TITLE'|websiteParam):getCompany().name|default('Nonamed') }}</title>
+        <link rel="icon" type="image/png" href="/images/logoMini.png" />                
+        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>        
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />        
+        <link href="/css/frontend/styles.css" rel="stylesheet" /> 
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #212529; padding: 0; border-bottom: 1px solid #4a4a4a;">        
+            <div class="container" style="min-height: 30px;">
+                <span style="color:#ff541b;">&nbsp;
+                    <a href="tel:{{ getCompany().phone|default('') }}" style="text-decoration: none;"><i class="fa fa-phone"></i><span class="d-none d-sm-inline" style="font-size: 0.85rem;"> {{ getCompany().phone|default('') }}</span></a> &nbsp;&nbsp;
+                    <a href="mailto:{{ getCompany().email|default('') }}" style="text-decoration: none;"><i class="fa fa-envelope"></i><span class="d-none d-sm-inline" style="font-size: 0.85rem;">  {{ getCompany().email|default('') }}</span></a>
+                </span>
+                <span style="color:#ff541b;">       
+                    <a class="mx-2" target="_blank" href="https://www.instagram.com/masquepalaabras/"><i class="fab fa-instagram"></i></a>
+                    <a class="mx-2" target="_blank" href="https://www.facebook.com/M%C3%A1s-Que-Palabras-108340667538594"><i class="fab fa-facebook-f"></i></a>
+                    <a class="mx-2" target="_blank" href="https://www.linkedin.com/company/quepalabras/"><i class="fab fa-linkedin-in"></i></a>
+                    &nbsp;
+                </span>
+            </div>
+        </nav>
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="margin-top: 31px; background-color: #212529;">           
+            <div class="container">                                
+                <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="images/logoInvert2.png" alt="" /></a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menú
+                    <i class="fas fa-bars ml-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#aboutus">Qué hacemos</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#services">Aprender</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#team">El equipo</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#course">Actividades</a></li>                        
+                        {% if feedbacks|length %}<li class="nav-item"><a class="nav-link js-scroll-trigger" href="#references">Referencias</a></li>{% endif %}
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container">
+                <img src="images/logoInvert2.png" style="width: 100%" alt="" />                
+                <a class="btn btn-primary btn-xl js-scroll-trigger" href="#services">Aprender</a>
+            </div>
+        </header>
+        <!-- Services-->
+        <section class="page-section" id="aboutus">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Qué hacemos</h2>
+                    <br>
+                </div>
+                <div class="row">
+                    {{ 'QUEHACEMOS_TEXT'|websiteParam|raw }} 
+                </div>
+            </div>
+        </section>                
+        
+        <section class="page-section bg-light" id="services">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Aprende a comunicar</h2>
+                    <br>
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-comments fa-stack-1x fa-inverse"></i>
+                        </span>
+                        {{ 'APRENDE1_TEXT'|websiteParam|raw }}                        
+                    </div>
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-users fa-stack-1x fa-inverse"></i>
+                        </span>
+                        {{ 'APRENDE2_TEXT'|websiteParam|raw }}
+                    </div>
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-handshake fa-stack-1x fa-inverse"></i>
+                        </span>
+                        {{ 'APRENDE3_TEXT'|websiteParam|raw }}
+                    </div>                    
+                </div>
+            </div>
+        </section>
+        <!-- Team-->
+        <section class="page-section" id="team">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">El equipo</h2>
+                    <br>
+                </div>
+                <div class="row">
+                    {% for teamMember in team %}
+                        {% if teamMember.curriculum and teamMember.getPhoto %}
+                    <div class="col-lg-6">
+                        <div class="team-member">
+                            <a class="team-link" data-toggle="modal" href="#cvModal{{ teamMember.id }}">
+                                <img class="team-image mx-auto rounded-circle" src="{{ teamMember.getValidPhoto() }}" alt="" />
+                                <div class="team-more">
+                                    <div class="btn btn-primary btn-xl shadow">¿Quieres saber más?</div>
+                                </div>
+                            </a>                                
+                            <h4><a class="team-link text-dark" data-toggle="modal" href="#cvModal{{ teamMember.id }}">{{ teamMember.name }}</a></h4>
+                            {% if teamMember.title %}<p class="text-muted">{{ teamMember.title }}</p>{% endif %}
+                            {% if teamMember.twitter %}<a class="btn btn-primary btn-social mx-2" href="{{ teamMember.twitter }}" target_="_blank"><i class="fab fa-twitter"></i></a>{% endif %}
+                            {% if teamMember.facebook %}<a class="btn btn-primary btn-social mx-2" href="{{ teamMember.facebook }}" target_="_blank"><i class="fab fa-facebook-f"></i></a>{% endif %}
+                            {% if teamMember.instagram %}<a class="btn btn-primary btn-social mx-2" href="{{ teamMember.instagram }}" target_="_blank"><i class="fab fa-instagram"></i></a>{% endif %}
+                            {% if teamMember.linkedin %}<a class="btn btn-primary btn-social mx-2" href="{{ teamMember.linkedin }}" target_="_blank"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+                        </div>
+                    </div>
+                        {% endif %}
+                    {%  endfor %}                                    
+                </div>                
+            </div>
+        </section>                
+        <!-- courses-->
+        <section class="page-section bg-light" id="course">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Nuestras actividades</h2>
+                    <br>
+                </div>
+                <ul class="timeline">
+                    {% for activity in activities %}                    
+                    <li {{ loop.index0%2?'class="timeline-inverted"' }} {% if activity.link %}onclick="window.open('{{ activity.link }}')" style="cursor:pointer;"{% endif %}>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="{{ asset('uploads/activities/' ~ activity.image) }}" alt="" /></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>{% if activity.dateText %}{{ activity.dateText }}{% else %}{{ activity.activityDate|date('d/m/Y') }}{% endif %}</h4>
+                                <h4 class="subheading">{{ activity.name }}</h4>
+                            </div>
+                            <div class="timeline-body"><p class="text-muted">{{ activity.remark|nl2br }}</p></div>
+                        </div>
+                    </li>
+                    {%  endfor %}                    
+                    <li class="timeline-inverted">
+                        <div class="timeline-image contactLink" style="cursor:pointer;">
+                            <h4>
+                                Habrá más
+                                <br />
+                                proximamente
+                                <br />
+                                ¡Apúntate!
+                            </h4>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        {% if feedbacks|length %}
+        <!-- References -->
+        <section class="page-section" id="references">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Nuestros clientes opinan</h2>
+                    <br>
+                </div>
+                
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">                    
+                    <div class="carousel-inner">
+                        {% for feedback in feedbacks %}
+                        <div class="carousel-item text-center {{ loop.first?'active'}}" {% if feedback.link %}onclick="window.open('{{ feedback.link }}')" style="cursor:pointer;"{% endif %}>
+                            <img class="img-fluid rounded mx-auto d-block mb-4" src="{{ asset('uploads/feedbacks/' ~ feedback.logo) }}" style="max-width: 200px;" alt="{{ feedback.companyName }}">
+                            
+                            <h4>{{ feedback.companyName }}</h4>
+                            
+                            <blockquote class="blockquote d-md-block">
+                                <p>{{ feedback.remark|nl2br }}</p>
+                                <footer class="blockquote-footer">{{ feedback.contactName }}</footer>
+                            </blockquote>                                                        
+                        </div>
+                        {% endfor %}                                                
+                    </div>
+                    {% if feedbacks|length > 1 %}
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Anterior</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+        <section class="page-section" id="contact">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Quiero saber más</h2>
+                    <h3 class="section-subheading text-white">Pídemos información sin compromiso.<br>Estamos a tu disposición para cualquier duda.</h3>
+                </div>
+                
+                {{ form_start(contactForm, {'attr':{'id':'contactForm', 'novalidate':'novalidate', 'name':'sentMessage'}}) }}
+                    <div class="row align-items-stretch mb-5">                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_widget(contactForm.name, {'attr': {'placeholder':"Tu nombre *", 'data-validation-required-message':"Por favor, escribe tu nombre."}}) }}
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(contactForm.email, {'attr': {'placeholder':"Tu e-mail *", 'data-validation-required-message':"Por favor, escribe tu e-mail."}}) }}
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="form-group mb-md-0">
+                                {{ form_widget(contactForm.phone, {'attr': {'placeholder':"Tu teléfono *", 'minlength':"5", 'data-validation-required-message':"Por favor, escribe tu teléfono."}}) }}
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-textarea mb-md-0">
+                                {{ form_widget(contactForm.remarks, {'attr': {'placeholder':"Tu mensaje *", 'data-validation-required-message':"Por favor, escribe tu mensaje."}}) }}                                
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="legal" name="legal" required="required">
+                            <label class="custom-control-label" for="legal" style="color:#fff">He leído y acepto la <a href="{{ path('privacy') }}">Política de Privacidad</a> y los <a href="{{ path('terms') }}">Términos de uso</a></label>
+                        </div>      
+                        <br>
+                        
+                        <div id="success"></div>
+                        <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" data-url="{{ path('contactSend') }}">Enviar mensaje</button>
+                    </div>                    
+                {{ form_end(contactForm) }}                                
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-lg-left">© {{ getCompany().name|default('Nonamed') }} {{ 'now'|date('Y') }}</div>
+                    <div class="col-lg-4 my-3 my-lg-0">
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href=""></i></a>
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <div class="col-lg-4 text-lg-right">
+                        <a class="mr-3" href="{{ path('privacy') }}">Política de privacidad</a>
+                        <a href="{{ path('terms') }}">Términos de uso</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Team Modals-->
+        {% for teamMember in team %}
+            {% if teamMember.curriculum and teamMember.getPhoto %}
+                <div class="portfolio-modal modal fade" id="cvModal{{ teamMember.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">                    
+                            <div class="container">                        
+                                <div class="close-modal" data-dismiss="modal" style="z-index: 999;"><img src="images/frontend/close-icon.svg" alt="Cerrar" style="max-width: 30px;" /></div>
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8">
+                                        <div class="modal-body">                                    
+                                            {{ teamMember.curriculum|raw }}
+
+                                            <button class="btn btn-primary" data-dismiss="modal" type="button">
+                                                <i class="fas fa-times mr-1"></i>
+                                                Cerrar Curriculum
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        
+        <!-- Modal 1-->
+        <div class="modal fade" id="legalModalCenter" tabindex="-1" role="dialog" aria-labelledby="legalModalCenter" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="legalModalCenterTitle">Acepta las condiciones legales</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Necesitamos que aceptes nuestras políticas de privacidad y términos de uso para enviar tu contacto.</p>
+                    </div>
+                    <div class="modal-footer">                        
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Entendido</button>
+                    </div>
+                </div>
+            </div>
+        </div>         
+        <div class="alert text-center cookiealert" role="alert">
+            {{ 'COOKIE_ADVISE_TEXT'|websiteParam|raw }} <a href="{{ path('cookies') }}">Más información</a>
+
+            <button type="button" class="btn btn-primary btn-sm acceptcookies">
+                Acepto
+            </button>
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>        
+        <!-- Contact form JS-->
+        <script src="js/frontend/jqBootstrapValidation.js"></script>        
+        <script src="js/frontend/contact_me.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/frontend/cookieAlert.js"></script>
+        <script src="js/frontend/scripts.js"></script>
+    </body>
+</html>

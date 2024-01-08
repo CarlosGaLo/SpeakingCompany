@@ -1,0 +1,104 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'course', 'owner' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="/js/admin/userList.js"></script>     
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            {{ course.title }}
+            {#<small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Vista general
+            </small>#}
+        </h1>
+        
+        <div class="page-tools">
+            <a href="{{ path('course_owner_public_index') }}">Volver al listado</a>
+        </div>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+    
+    {% if course.disabled %}
+        <div class="alert bgc-red-l4 border-none border-l-4 brc-red-tp1 radius-0 text-dark-tp2">
+            <h4 class="text-danger-d1 text-130">Curso desactivado</h4>
+            Este curso está desactivado y no es posible realizarlo en este momento.
+        </div>
+    {% else %}
+        <div class="col-12 mt-3 mt-md-0">
+            <div class="col-12 px-4 mt-3">
+                            <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start mt-3 mb-2 text-95 pl-3">
+                              <div class="d-style order-first  mx-2 radius-2 overflow-hidden mb-3 mb-sm-0">
+                                <img {% if not course.headerImage %}data-src="holder.js/150x150?theme=gray&amp;text=Sin imagen"{% endif %} src="{{ asset('uploads/courses/' ~ course.headerImage) }}" style="width: 150px; height: 150px;">
+                              </div>
+                              <div class="mt-2 mt-sm-0 flex-grow-1 text-dark-m2">                                
+                                <p>
+                                  {{ course.description }}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                                <hr>
+            
+                <div class="card dcard h-100"> 
+                  <div class="card-body p-0">
+                      
+                      
+                    <div class="tab-pane px-1 px-md-2 px-lg-3 active" id="profile-tab-activity">
+                        <div>
+                            
+                                
+                                
+                            
+                          <div class="d-flex m-3">
+                            <h4 class="text-dark-tp4 text-130 p-0 m-0">
+                                Modulos ({{ course.modules|length }})
+                            </h4>
+                          </div>
+                            <hr class="border-dotted mx-3">
+                          
+                            <div class="px-lg-3">
+                            {% for module in course.modules %}
+                                <div class="mb-2 text-dark-m3 text-95 border-l-3 {{ (module.moduleVideos|length or module.moduleTexts|length or module.moduleTests|length)?'brc-success-m1':'brc-danger-m1' }} pl-3">
+                                    <div class="d-flex align-items-start">   
+                                        <img {% if not course.headerImage %}data-src="holder.js/100x100?theme=gray&amp;text=Sin imagen"{% endif %} class="radius-1 mb-1 mb-sm-0 mr-3 d-none d-sm-block" src="{{ asset('uploads/modules/images/' ~ module.headerImage) }}" style="width: 100px; height: 100px;">
+                                        
+                                        <div class="mx-2">                                            
+                                            <strong>{{ module.title }}</strong><br>
+                                            {{ module.description }}<hr>
+                                            
+                                            <span class="text-danger-m1">{{ module.moduleVideos|length }} <i class="fa fa-film text-100"></i></span>&nbsp;&nbsp;&nbsp;
+                                            <span class="text-blue-m1">{{ module.moduleTexts|length }} <i class="fa fa-file-alt text-100"></i></span>&nbsp;&nbsp;&nbsp;
+                                            <span class="text-orange-m1">{{ module.moduleTests|length }} <i class="fa fa-tasks text-100"></i></span>
+                                        </div>
+
+                                        <span class="text-90 text-grey-m1 ml-auto text-nowrap">
+                                            <a href="{{ path("course_module_show", {'id':purchase.id, 'moduleId': module.id}) }}" class="btn btn-xs btn-info">
+                                                Ir al módulo
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr class="brc-grey-l3">                            
+                            {% endfor %}
+                            </div>                                                      
+                        </div>
+                      </div>                                       
+                  </div>
+                </div><!-- /.card -->
+
+              </div>  
+    {% endif %}                  
+{% endblock %}

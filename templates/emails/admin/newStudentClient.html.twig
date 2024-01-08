@@ -1,0 +1,14 @@
+<h1>¡Hola {{ email.toName }}!</h1>
+
+<p>
+    Gracias por darte de alta en <strong>Más que palabras</strong>.<br>
+</p>
+
+<p>
+    Haz click en le siguiente enlace para validar tu correo electrónico:<br><br>
+    <strong><a href="{{ url("validateUser", {'token':hash}) }}">{{ url("validateUser", {'token':hash}) }}</a></strong><br>    
+</p>
+
+<p>
+    <small>Si no puedes ver el enlace, copia y pega la siguiente dirección en tu navegador: <i>{{ url("validateUser", {'token':hash}) }}</i></small>
+</p>

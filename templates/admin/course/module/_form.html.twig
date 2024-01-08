@@ -1,0 +1,336 @@
+{{ form_start(form) }}
+<div class="h-1 my-3"></div>    
+
+    <div class="form-group row">
+        <div class="col-sm-3 col-form-label text-sm-right pr-0 {{ form.headerImage.vars.errors|length > 0?'text-danger-m1' }}"><label class="mb-0 required" for="module_headerImage">Imagen</label></div>
+        <div class="col-sm-9">            
+            {% if module.headerImage %}
+            <div class="imgBlock col-sm-4 col-md-6 pr-0 pl-0">                
+                <div class="pos-rel d-style my-3 radius-1 shadow-sm overflow-hidden bgc-primary-m3" style="max-width: 200px;">
+                    <a href="#" class="show-lightbox">
+                        <img src="{{ asset('uploads/modules/images/' ~ module.headerImage) }}" class="w-100 d-zoom-2">
+                    </a>
+
+                    <div class="mt-hover position-tl w-100 bgc-black-tp4 p-25">
+                        <div class="d-flex justify-content-center action-buttons text-110">                            
+                            <a href="#" class="imgChangeBtn mx-2" data-id="module_headerImage"><i class="fa fa-pen text-orange-m2"></i></a>
+                            <a href="#" class="imgDeleteBtn mx-2" data-id="module_headerImage" data-url="{{ path('course_module_deleteHeaderImage', {'id':module.id}) }}"><i class="fa fa-times text-danger-m3"></i></a>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            {% endif %}
+            <div class="imgFieldBlock col-sm-8 col-md-6 pr-0 pl-0" style="display: {{ module.headerImage?'none' }}">
+            {{ form_widget(form.headerImage, {'attr':{'class':'ace-file-input'}}) }} 
+            {{ form_errors(form.headerImage) }}
+            {% if module.headerImage %}<small class="imgFieldCancelBlock"><a href="#" class="imgCancelBtn">Cancelar cambio de imagen</a></small>{% endif %}
+            </div>            
+        </div>        
+    </div>
+
+    {{ form_row(form.title) }}                    
+    {{ form_row(form.description, {'attr':{'rows':4}}) }}        
+       
+    <br>
+    
+    <ul class="nav nav-tabs page-nav-tabs nav-justified nav-tabs-scroll is-scrollable mx-n3 nav-tabs-boxed mx-lg-0" role="tablist" style="">
+        <li class="nav-item">
+            <a class="nav-link active" id="videos-tab" data-toggle="tab" href="#videos" role="tab" aria-controls="videos" aria-selected="true">
+                <i class="text-danger-m1 fas fa-film mr-2 text-110"></i>
+                Vídeos
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" id="texts-tab" data-toggle="tab" href="#texts" role="tab" aria-controls="texts" aria-selected="false">
+                <i class="text-blue-m1 far fa-file-alt mr-2 text-110"></i>
+                Textos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tests-tab" data-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false">
+                <i class="text-orange-m1 fas fa-tasks mr-2 text-110"></i>
+                Tests
+            </a>
+        </li>
+    </ul>
+    
+    <div class="tab-content border-0 px-0 pt-5">
+        <div class="tab-pane fade active show" id="videos" role="tabpanel" aria-labelledby="videos-tab">
+            <div class="row">
+                <div class="col-12">   
+                    <div id="images_noImgBlock">
+                        <div role="alert" class="alert alert-warning bgc-warning-l4 brc-warning-m3 border-2 d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle mr-3 fa-2x text-orange"></i>
+
+                            <div class="text-dark-tp2">
+                                Este módulo no tiene ningún vídeo.
+                            </div>                                   
+                        </div>
+                    </div>
+
+                    <ul id="imagesFiles" class="ace-thumbnails files clearfix" style="list-style: none; margin: 0; padding: 0;">
+                        {% for moduleVideo in module.moduleVideos %}
+                            <li style="border-color: #cccccc; float: left; overflow: hidden; margin: 2px; border: 2px solid #333;">                                
+                                <a href="http://www.youtube.com/embed/{{ moduleVideo.videoKey }}?autoplay=1" rel="propertyGallery" class="galleryElement fancybox.iframe watermarkYoutube cboxElement">
+                                    <img data-image-url="{{ moduleVideo.videoKey }}" class="imagesFiles_img galleryVideo" src="http://img.youtube.com/vi/{{ moduleVideo.videoKey }}/0.jpg" width="300" height="225" />
+                                </a>                                                               
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <br><br>
+                    <div class="form-row">
+                        <div class="col-2">
+                            <button type="button" class="btn px-4 btn-secondary mb-1" data-toggle="modal" data-target="#formModuleVideo">Añadir nuevo vídeo</button>
+                        </div>                                                                        
+                        <div class="col">
+                            <small class="text-muted">Puedes arrastrar los vídeos para ordenarlos</small>
+                        </div>                                                                        
+                    </div> 
+                    
+                    <p class="text-center">    <hr>                </p>
+                    
+                    {% set collectPrototype = '<div class="moduleVideoItem">' ~
+form_widget(form.moduleVideos.vars.prototype.videoUrl, {'attr':{'class':'moduleVideoVideoUrl'}}) ~
+form_widget(form.moduleVideos.vars.prototype.videoKey, {'attr':{'class':'moduleVideoVideoKey'}}) ~
+form_widget(form.moduleVideos.vars.prototype.position, {'attr':{'class':'moduleVideoPosition'}}) ~
+'</div>'
+                    %}
+
+                    <div style="display:none;" id="moduleVideosWidget_{{ form.moduleVideos.vars['id'] }}"
+                         data-widget-id="{{ form.moduleVideos.vars['id'] }}"
+                         data-prototype="{{ collectPrototype|e }}">
+
+                        {% for resource in form.moduleVideos %}
+                            <div class="moduleVideoItem">
+                                {{ form_widget(resource.videoUrl, {'attr':{'class':'moduleVideoVideoUrl'}}) }}
+                                {{ form_widget(resource.videoKey, {'attr':{'class':'moduleVideoVideoKey'}}) }}
+                                {{ form_widget(resource.position, {'attr':{'class':'moduleVideoPosition'}}) }}                                
+                            </div>
+                        {% else %}
+                            {{ form_widget(form.moduleVideos) }}
+                        {% endfor %}
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="texts" role="tabpanel" aria-labelledby="texts-tab">
+            <div class="row">
+                <div class="col-12">
+                    
+                    <div id="text_noImgBlock">
+                        <div role="alert" class="alert alert-warning bgc-warning-l4 brc-warning-m3 border-2 d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle mr-3 fa-2x text-orange"></i>
+
+                            <div class="text-dark-tp2">
+                                Este módulo no tiene ningún texto.
+                            </div>                                   
+                        </div>
+                    </div>
+
+                    <ul id="textFiles" class="ace-thumbnails files clearfix" style="list-style: none; margin: 0; padding: 0;">
+                        {% for moduleText in module.moduleTexts %}
+                            <li style="border-color: #cccccc; margin: 2px;" class="textsFiles_text" data-text-filename="{{ moduleText.filename }}">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-flex flex-column flex-sm-row bgc-white radius-1 px-2 py-3 brc-h-orange-m4 pos-rel d-style overflow-hidden">
+                                            <img data-src="holder.js/50x75?theme=gray&amp;text=.pdf" class="radius-1 mb-1 mb-sm-0 mr-3 d-none d-sm-block" alt="Product [100x100]" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17a34a4d619%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17a34a4d619%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2224.5390625%22%20y%3D%2254.5%22%3EProduct%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true" style="width: 50px; height: 100px;">
+
+                                            <div>
+                                                <div>
+                                                    <img data-src="holder.js/50x75?theme=gray&amp;text=.pdf" class="radius-1 mb-1 mb-sm-0 mr-3 d-sm-none float-left" alt="Product [100x100]" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_17a34a4d61a%20text%20%7B%20fill%3A%23AAAAAA%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_17a34a4d61a%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23EEEEEE%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2224.5390625%22%20y%3D%2254.5%22%3EProduct%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true" style="width: 50px; height: 100px;">
+
+                                                    <div>
+                                                        <h3 class="d-inline-block text-130">
+                                                            <a href="{{ moduleText.filename }}" target="_blank" class="btn-text-dark btn-h-text-primary">{{ moduleText.title }}</a>
+                                                        </h3>                            
+                                                    </div>                         
+                                                </div>
+
+                                                <div class="mt-2">
+                                                    <a href="#" class="text-danger textDeleteBtn" data-text-filename="{{ moduleText.filename }}">Eliminar archivo</a>
+                                                </div>
+                                            </div>                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <br><br>
+                    <div class="form-row">
+                        <div class="col-2">
+                            <button type="button" class="btn px-4 btn-secondary mb-1" data-toggle="modal" data-target="#formModuleText">Añadir nuevo texto</button>
+                        </div>                                                                        
+                        {#<div class="col">
+                            <small class="text-muted">Puedes arrastrar los textos para ordenarlos</small>
+                        </div> #}                                                                       
+                    </div> 
+                    
+                    <p class="text-center">    <hr>                </p>
+                    
+                    
+                    {% set collectPrototype = '<div class="moduleTextItem">' ~
+form_widget(form.moduleTexts.vars.prototype.title, {'attr':{'class':'moduleTextTitle'}}) ~
+form_widget(form.moduleTexts.vars.prototype.filename, {'attr':{'class':'moduleTextUrl'}}) ~
+form_widget(form.moduleTexts.vars.prototype.position, {'attr':{'class':'moduleTextPosition'}}) ~
+'</div>'
+                    %}
+                    
+                    <div style="display:none;" id="moduleTextsWidget_{{ form.moduleTexts.vars['id'] }}"
+                         data-widget-id="{{ form.moduleTexts.vars['id'] }}"
+                         data-prototype="{{ collectPrototype|e }}">
+
+                        {% for resource in form.moduleTexts %}
+                            <div class="moduleTextItem">
+                                {{ form_widget(resource.title, {'attr':{'class':'moduleTextTitle'}}) }}
+                                {{ form_widget(resource.filename, {'attr':{'class':'moduleTextUrl'}}) }}
+                                {{ form_widget(resource.position, {'attr':{'class':'moduleTextPosition'}}) }}                                
+                            </div>
+                        {% else %}
+                            {{ form_widget(form.moduleTexts) }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="tests" role="tabpanel" aria-labelledby="tests-tab">
+            <div class="row">
+                <div class="col-12">
+                    Tests
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="my-5 border-t-1 brc-grey-l1 bgc-grey-l3 py-3">
+        <div class="offset-md-3 col-md-9">
+            <button class="btn btn-info" type="submit">
+                <i class="fa fa-check mr-1"></i>
+                {{ button_label|default('Guardar') }}
+            </button>
+
+            &nbsp;            
+            <a href="{{ path('course_show', {'id': module.course.id, 'tab': 'modules'}) }}">Volver al curso</a>            
+        </div>
+    </div>
+            
+            
+    <div class="modal fade" id="formModuleVideo" tabindex="-1" role="dialog" aria-labelledby="formModuleVideoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 800px;">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Añadir vídeo
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">
+                    <label>Dirección del vídeo en Youtube</label>
+                    
+                    <div class="form-row">
+                        <div class="col-12">
+                            <input id="videoUrlField" class="form-control" type="url" placeholder="http://www.youtube.com/watch?v=dvl-ZYeRPkk">
+                        </div>                                                                        
+                    </div>                                                            
+                    <small id="youtubeStandbyBlock" class="text-muted">Copia y pega la url de Youtube</small>
+                    
+                    <div id="youtubeErrorBlock" class="hide" style="display:none;">
+                        <br>
+                        <div class="alert d-flex bgc-danger-l4 text-dark-tp3 radius-0 text-120 brc-danger-l2" role="alert">
+                            <div class="position-tl h-102 ml-n1px border-l-4 brc-danger-tp2 m-n1px"></div>
+
+                            <i class="fas fa-exclamation-triangle mr-3 fa-2x text-danger-d1"></i>
+                            <span class="align-self-center">
+                                La url insertada no parece una dirección válida de YouTube
+                            </span>
+                        </div>                    
+                    </div>
+                    <p id="youtubeIframeBlock" class="hide" style="padding-top: 15px"></p>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">
+                        Cerrar
+                    </button>
+
+                    <input type="button" class="addVideoBtn btn btn-primary" disabled="disabled" data-widget-id="{{ form.moduleVideos.vars['id'] }}" value="Añadir">                    
+                </div>
+            </div>
+        </div>
+    </div>
+                    
+    <div class="modal fade" id="showModuleVideo" tabindex="-1" role="dialog" aria-labelledby="showModuleVideoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 800px;">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Vídeo
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">                    
+                    <p id="showYoutubeIframeBlock" class="hide" style="padding-top: 15px"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">
+                        Cerrar
+                    </button>
+
+                    <input type="button" id="deleteVideoBtn" class="btn btn-danger" value="Eliminar">                    
+                </div>
+            </div>
+        </div>
+    </div>
+                    
+                    
+    <div class="modal fade" id="formModuleText" tabindex="-1" role="dialog" aria-labelledby="formModuleTextLabel" aria-hidden="true" data-url="{{ path('course_module_uploadFile') }}">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 800px;">
+            <div class="modal-content border-0 shadow radius-1">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary-d2" id="mailElementForm_title">
+                        Añadir texto
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                                
+                <div class="modal-body modal-scroll">
+                    <label>Título</label>
+                    
+                    <div class="form-row">
+                        <div class="col-12">
+                            <input id="textTitleField" class="form-control" type="text" placeholder="Título">
+                        </div>                                                                        
+                    </div>  
+                    <br>
+                    <label>Archivo</label>
+                                        
+                    <div class="textFileFieldBlock col-12 pr-0 pl-0">
+                        <input type="file" id="textFile" name="textFile" class="ace-file-input custom-file-input">                    
+                    </div>                                         
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">
+                        Cerrar
+                    </button>
+
+                    <input type="button" class="addTextBtn btn btn-primary" data-widget-id="{{ form.moduleTexts.vars['id'] }}" value="Añadir">
+                </div>
+            </div>
+        </div>
+    </div>
+{{ form_end(form) }}

@@ -1,0 +1,17 @@
+<h1>Nuevo contacto desde la web</h1>
+
+<p>
+    Un navegante quiere saber más sobre <strong>Más que Palabras</strong>. Puedes <a href="{{ url('contact_index') }}#{{ contact.id }}">ver el contacto en el panel de administración</a>
+</p>
+
+<p>
+    Esta es la información que nos han enviado:<br><br>
+    <strong>Nombre:</strong> {{ contact.name }}<br>
+    <strong>E-mail:</strong> {{ contact.email }}<br>
+    <strong>Teléfono:</strong> {{ contact.phone }}<br>
+    <strong>Mensaje:</strong> <br> {{ contact.remarks }}
+</p>
+
+<p>
+    <small>Este mensaje ha sido enviado de forma automática.</small>
+</p>

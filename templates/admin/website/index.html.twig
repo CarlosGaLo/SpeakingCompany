@@ -1,0 +1,327 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Website - {{ getCompany().name|default('Nonamed') }}{% endblock %}
+
+{% block sidebarMenu %}
+    {% set section, page = 'website', 'websiteIndex' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/basictable/jquery.basictable.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>       
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.js"></script>
+    <script src="/js/admin/template/summernote-es-ES.js"></script>
+    
+    <script type="text/javascript" src="/js/admin/feedbackList.js"></script>
+    <script type="text/javascript" src="/js/admin/activityList.js"></script>
+    <script type="text/javascript" src="/js/admin/websiteParam.js"></script>
+    
+    <script type="text/javascript">
+        jQuery(function($) {
+
+          //update icons
+          $.extend($.summernote.options.icons, {
+            'align': 'fa fa-align',
+            'alignCenter': 'fa fa-align-center',
+            'alignJustify': 'fa fa-align-justify',
+            'alignLeft': 'fa fa-align-left',
+            'alignRight': 'fa fa-align-right',
+            'indent': 'fa fa-indent',
+            'outdent': 'fa fa-outdent',
+            'arrowsAlt': 'fa fa-arrows-alt',
+            'bold': 'fa fa-bold',
+            'caret': 'fa fa-caret-down text-grey-m3 ml-1',
+            'circle': 'fa fa-circle',
+            'close': 'fa fa fa-close',
+            'code': 'fa fa-code',
+            'eraser': 'fa fa-eraser',
+            'font': 'fa fa-font',
+            'italic': 'fa fa-italic',
+            'link': 'fa fa-link text-success-m1',
+            'unlink': 'fas fa-unlink',
+            'magic': 'fa fa-magic text-brown-m3',
+            'menuCheck': 'fa fa-check',
+            'minus': 'fa fa-minus',
+            'orderedlist': 'fa fa-list-ol text-blue',
+            'pencil': 'fa fa-pencil',
+            'picture': 'far fa-image text-purple',
+            'question': 'fa fa-question',
+            'redo': 'fa fa-repeat',
+            'square': 'fa fa-square',
+            'strikethrough': 'fa fa-strikethrough',
+            'subscript': 'fa fa-subscript',
+            'superscript': 'fa fa-superscript',
+            'table': 'fa fa-table text-danger-m2',
+            'textHeight': 'fa fa-text-height',
+            'trash': 'fa fa-trash',
+            'underline': 'fa fa-underline',
+            'undo': 'fa fa-undo',
+            'unorderedlist': 'fa fa-list-ul text-blue',
+            'video': 'far fa-file-video text-pink-m2'
+          });
+
+            $('.summernote').summernote({
+                lang: 'es-ES',
+                height: 350,
+                minHeight: 150,
+                maxHeight: 600,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['codeview']],
+                ],
+            });      
+
+        });
+      </script>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title text-primary-d2">
+            Website
+            <small class="page-info text-secondary-d2">
+                <i class="fa fa-angle-double-right text-80"></i>
+                Configuración del sitio web
+            </small>
+        </h1>
+    </div>           
+
+    <div class="h-1 my-1"></div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="sticky-nav"><div class="sticky-trigger"></div>
+                <ul class="nav nav-tabs page-nav-tabs nav-justified nav-tabs-scroll is-scrollable mx-n3 nav-tabs-boxed mx-lg-0" role="tablist" style="">
+                    <li class="nav-item">
+                        <a class="nav-link {{ tab == 'general'?'active'}}" id="tabs-tab" data-toggle="tab" href="#tabs" role="tab" aria-controls="tabs" aria-selected="{{ tab == 'general'?'true':'false'}}">
+                            <i class="text-success-m2 fa fa-home mr-2 text-110"></i>
+                            General
+                        </a>
+                    </li>
+                                        
+                    <li class="nav-item">
+                        <a class="nav-link" id="modals-tab" data-toggle="tab" href="#modals" role="tab" aria-controls="modals" aria-selected="false">
+                            <i class="text-orange-m1 fas fa-window-maximize mr-2 text-110"></i>
+                            Metas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ tab == 'feedback'?'active'}}" id="tooltips-tab" data-toggle="tab" href="#tooltips" role="tab" aria-controls="tooltips" aria-selected="{{ tab == 'feedback'?'true':'false'}}">
+                            <i class="text-blue-m1 far fa-comment-alt mr-2 text-110"></i>
+                            Opiniones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ tab == 'activity'?'active'}} pr-3" id="misc-tab" data-toggle="tab" href="#misc" role="tab" aria-controls="misc" aria-selected="{{ tab == 'activity'?'true':'false'}}">
+                            <i class="text-pink-m1 fas fa-cubes mr-2 text-110"></i>
+                            Actividades
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ tab == 'legal'?'active'}}" id="modals-tab" data-toggle="tab" href="#alerts" role="tab" aria-controls="alerts" aria-selected="{{ tab == 'legal'?'true':'false'}}">
+                            <i class="text-danger-m3 fas fa-exclamation-triangle mr-2 text-110"></i>
+                            Avisos Legales
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content border-0 px-0 pt-5">
+                <div class="tab-pane fade {{ tab == 'general'?'active show'}}" id="tabs" role="tabpanel" aria-labelledby="tabs-tab">
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseOne" data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Qué hacemos
+                                            </a>
+                                        </h2>
+                                    </div>
+
+                                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" style="">
+                                        <div class="card-body">
+                                            
+                                            <textarea id="quehacemosText" name="quehacemosText" class="summernote">{{ 'QUEHACEMOS_TEXT'|websiteParam }}</textarea>
+                                            
+                                            <br>
+                                            <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'QUEHACEMOS_TEXT'}) }}" data-value-field="#quehacemosText">Guardar cambios</button>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingTwo">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseTwo" data-toggle="collapse" aria-expanded="false" aria-controls="collapseTwo">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Aprende a comunicar
+                                            </a>
+                                        </h2>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample" style="">                                        
+                                        <div class="card-body row">
+                                            <div class="col-12 col-sm-4 ">
+                                                <textarea id="aprende1Text" name="aprende1Text" class="summernote">{{ 'APRENDE1_TEXT'|websiteParam }}</textarea>                                                                                        
+                                                <br>
+                                                <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'APRENDE1_TEXT'}) }}" data-value-field="#aprende1Text">Guardar cambios</button>
+                                            </div>
+                                            <div class="col-12 col-sm-4 ">
+                                                <textarea id="aprende2Text" name="aprende2Text" class="summernote">{{ 'APRENDE2_TEXT'|websiteParam }}</textarea>                                                                                        
+                                                <br>
+                                                <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'APRENDE2_TEXT'}) }}" data-value-field="#aprende2Text">Guardar cambios</button>
+                                            </div>
+                                            <div class="col-12 col-sm-4 ">
+                                                <textarea id="aprende3Text" name="aprende3Text" class="summernote">{{ 'APRENDE3_TEXT'|websiteParam }}</textarea>                                                                                        
+                                                <br>
+                                                <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'APRENDE3_TEXT'}) }}" data-value-field="#aprende3Text">Guardar cambios</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                                            
+                            </div>
+                        </div>
+                    </div>
+
+                </div>               
+
+                <div class="tab-pane fade" id="modals" role="tabpanel" aria-labelledby="modals-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group row">
+                                <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for="metaTitle">Title</label></div>
+                                <div class="col-sm-9"> 
+                                    <input type="text" id="metaTitle" name="metaTitle" maxlength="255" class="col-sm-8 col-md-6 d-inline-block form-control" value="{{ 'META_TITLE'|websiteParam }}">                                                                        
+                                    <button class="setWebsiteParamBtn btn btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'META_TITLE'}) }}" data-value-field="#metaTitle">Guardar</button>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for="metaTitle">Keywords</label></div>
+                                <div class="col-sm-9">                                     
+                                    <input type="text" id="metaKeywords" name="metaKeywords" maxlength="255" class="col-sm-8 col-md-6 d-inline-block form-control" value="{{ 'META_KEYWORDS'|websiteParam }}">                                    
+                                    <button class="setWebsiteParamBtn btn btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'META_KEYWORDS'}) }}" data-value-field="#metaKeywords">Guardar</button>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3 col-form-label text-sm-right pr-0"><label class="mb-0" for="metaTitle">Description</label></div>
+                                <div class="col-sm-9">                                     
+                                    <textarea id="metaDescription" name="metaDescription" rows="5" class="col-sm-8 col-md-6 d-inline-block form-control">{{ 'META_DESCRIPTION'|websiteParam }}</textarea><br>
+                                    <button class="setWebsiteParamBtn btn btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'META_DESCRIPTION'}) }}" data-value-field="#metaDescription">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade {{ tab == 'feedback'?'active show'}}" id="tooltips" role="tabpanel" aria-labelledby="tooltips-tab">
+                    {{ include('admin/website/feedback/card.html.twig') }}    
+                </div>
+
+                <div class="tab-pane fade {{ tab == 'activity'?'active show'}}" id="misc" role="tabpanel" aria-labelledby="misc-tab">
+                    {{ include('admin/website/activity/card.html.twig') }}
+                </div>
+                
+                <div class="tab-pane fade {{ tab == 'legal'?'active show'}}" id="alerts" role="tabpanel" aria-labelledby="alerts-tab">
+                    <div class="row">
+
+                        <div class="col-sm-12">
+                            <h4 class="text-primary-m1 text-130 pb-2 mb-3">Textos legales de la web pública</h4>
+
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseOne" data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Política de privacidad
+                                            </a>
+                                        </h2>
+                                    </div>
+
+                                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" style="">
+                                        <div class="card-body">
+                                            
+                                            <textarea id="privacyText" name="privacyText" class="summernote">{{ 'PRIVACY_TEXT'|websiteParam }}</textarea>
+                                            
+                                            <br>
+                                            <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'PRIVACY_TEXT'}) }}" data-value-field="#privacyText">Guardar cambios</button>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingTwo">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseTwo" data-toggle="collapse" aria-expanded="false" aria-controls="collapseTwo">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Términos de uso
+                                            </a>
+                                        </h2>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample" style="">
+                                        <div class="card-body">
+                                            <textarea id="termsText" name="termsText" class="summernote">{{ 'TERMS_TEXT'|websiteParam }}</textarea>                                                                                        
+                                            <br>
+                                            <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'TERMS_TEXT'}) }}" data-value-field="#termsText">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingThree">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseThree" data-toggle="collapse" aria-expanded="false" aria-controls="collapseThree">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Información sobre cookies
+                                            </a>
+                                        </h2>
+                                    </div>
+                                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample" style="">
+                                        <div class="card-body">
+                                            <textarea id="cookieText" name="cookieText" class="summernote">{{ 'COOKIE_TEXT'|websiteParam }}</textarea>
+                                            <br>
+                                            <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'COOKIE_TEXT'}) }}" data-value-field="#cookieText">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingFour">
+                                        <h2 class="card-title">
+                                            <a class="accordion-toggle collapsed" href="#collapseFour" data-toggle="collapse" aria-expanded="false" aria-controls="collapseFour">
+                                                <i class="fa fa-angle-right toggle-icon mr-1"></i>
+                                                Aviso de cookies
+                                            </a>
+                                        </h2>
+                                    </div>
+                                    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample" style="">
+                                        <div class="card-body">
+                                            <textarea id="cookieAdviseText" name="cookieAdviseText" class="summernote">{{ 'COOKIE_ADVISE_TEXT'|websiteParam }}</textarea>
+                                            <br>
+                                            <button class="setWebsiteParamBtn btn btn-md btn-primary mb-2px" data-url="{{ path('website_setParam', {'param':'COOKIE_ADVISE_TEXT'}) }}" data-value-field="#cookieAdviseText">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>           
+{% endblock %}

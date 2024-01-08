@@ -1,0 +1,14 @@
+<h1>¡Hola {{ email.toName }}!</h1>
+
+<p>
+    Has solicitado recuperar tu contraseña en <strong><a href="http://www.masquepalabrasoratoria.es">Más que Palabras</a></strong>
+</p>
+
+<p>
+    <a href="{{ url('app_changePassword', {'i':token}) }}">Haz click aquí para crear una nueva clave para tu usuario</a>
+    (Este enlace es válido hasta el {{ expirationDate|date('F jS') }})    
+</p>
+
+<p>
+    <small>Si no puedes ver el enlace, copia y pega la siguiente dirección en tu navegador: <i>{{ url('app_changePassword', {'i':token}) }}</i></small>
+</p>

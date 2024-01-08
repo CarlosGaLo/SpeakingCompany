@@ -1,0 +1,1731 @@
+{% extends 'admin/layout/base.html.twig' %}
+
+{% block title %}Administración - Mas que Palabras{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sortablejs/Sortable.min.js"></script>
+    
+    <!-- "Dashboard" page script to enable its demo functionality -->
+      <script type="text/javascript">
+        jQuery(function($) {
+          if (!('ontouchstart' in window)) $('[data-toggle="tooltip"]').tooltip({
+            container: 'body'
+          }); //show tooltips          
+
+          //draw charts
+          var _animate = !AceApp.Util.isReducedMotion(); //make sure no animation is displayed according to user preferences
+
+
+          //the traffic sources pie chart
+          var config = {
+            type: 'doughnut',
+            data: {
+              datasets: [{
+                label: 'Contactos',
+                data: [{{ validContactNb|default(0) }}, {{ pendingContactNb|default(0) }}],
+                backgroundColor: [
+                  "#6dbb6d",                  
+                  "#e5758f",                  
+                ],
+              }],
+              labels: [
+                'Validados',                
+                'Pendientes'
+              ]
+            },
+
+            options: {
+              responsive: true,
+
+              cutoutPercentage: 50,
+              legend: {
+                display: true,
+                position: 'right',
+                labels: {
+                  usePointStyle: true
+                }
+              },
+              animation: {
+                animateRotate: true,
+                duration: _animate ? 1000 : false
+              },
+              tooltips: {
+                enabled: true,
+                cornerRadius: 0,
+                bodyFontColor: '#fff',
+                bodyFontSize: 14,
+                fontStyle: 'bold',
+
+                backgroundColor: 'rgba(34, 34, 34, 0.73)',
+                borderWidth: 0,
+
+                caretSize: 5,
+
+                xPadding: 12,
+                yPadding: 12,
+
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    var label = data.labels[tooltipItem.index];
+                    return ' ' + label + ": " + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                  }
+                }
+              }
+            }
+          };
+
+          var trafficPieChart = new Chart(document.getElementById('piechart'), config);
+
+
+          {#//////////////
+          //the sales stats chart
+          var canvas = document.getElementById("saleschart");
+          canvas.className = 'mw-100';
+
+          var ctx = canvas.getContext("2d");
+
+          var gradient1 = ctx.createLinearGradient(0, 0, 0, 200);
+          gradient1.addColorStop(0, 'rgba(253, 245, 231, 1)');
+          gradient1.addColorStop(1, 'rgba(253, 245, 231, 0.5)');
+
+          var gradient2 = ctx.createLinearGradient(0, 0, 0, 200);
+          gradient2.addColorStop(0, 'rgba(95, 196, 144, 0.27)');
+          gradient2.addColorStop(1, 'rgba(95, 196, 144, 0.07)');
+
+
+          var gradient3 = ctx.createLinearGradient(0, 0, 0, 200);
+          gradient3.addColorStop(0, 'rgba(82, 181, 240, 0.27)');
+          gradient3.addColorStop(1, 'rgba(82, 181, 240, 0.07)');
+
+
+          var chartOptions1 = {
+            lineTension: 0.3,
+            borderWidth: 1.25,
+            pointRadius: 3.5,
+            pointHoverRadius: 5
+          };
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+              datasets: [{
+                  label: "Instagram",
+                  data: [3200, 1500, 3500, 2500, 3200, 7000, 2300, 3500, 3500, 6000, 6200, 8100],
+
+                  fill: true,
+
+                  borderColor: '#f0b552',
+                  backgroundColor: gradient1,
+
+                  pointBorderColor: 'transparent',
+                  pointBackgroundColor: 'transparent',
+
+                  pointHoverBorderColor: '#f0b552',
+                  pointHoverBackgroundColor: '#fff',
+
+                  borderWidth: chartOptions1.borderWidth,
+                  pointRadius: chartOptions1.pointRadius,
+                  pointHoverRadius: chartOptions1.pointHoverRadius,
+
+                  lineTension: chartOptions1.lineTension,
+                },
+                {
+                  label: "Twitter",
+                  data: [2500, 4200, 3000, 4000, 5500, 4800, 4600, 5900, 5800, 8900, 8200, 9000],
+
+                  fill: true,
+
+                  borderColor: '#5fc490',
+                  backgroundColor: gradient2,
+
+                  pointBorderColor: 'transparent',
+                  pointBackgroundColor: 'transparent',
+
+                  pointHoverBorderColor: '#5fc490',
+                  pointHoverBackgroundColor: '#fff',
+
+
+                  borderWidth: chartOptions1.borderWidth,
+                  pointRadius: chartOptions1.pointRadius,
+                  pointHoverRadius: chartOptions1.pointHoverRadius,
+
+                  lineTension: chartOptions1.lineTension,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+
+              animation: {
+                duration: _animate ? 1000 : false
+              },
+
+              tooltips: {
+                enabled: true,
+                cornerRadius: 2,
+
+                titleFontColor: '#fff',
+                titleFontSize: 16,
+                titleFontStyle: 'normal',
+
+                bodyFontColor: '#fff',
+                bodyFontSize: 14,
+                fontFamily: 'Open Sans',
+
+                backgroundColor: '#587d97',
+                borderWidth: 1,
+                borderColor: '#395b6c',
+
+                caretSize: 5,
+
+                xPadding: 12,
+                yPadding: 12,
+
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                    if (label) {
+                      label += ': ';
+                    }
+                    label += parseFloat(tooltipItem.yLabel / 1000) + 'k';
+                    return " " + label;
+                  },
+                  labelColor: function(tooltipItem) {
+                    var backgroundColors = [
+                      '#f7d9a7',
+                      '#a7d7bd'
+                    ]
+                    var borderColors = [
+                      '#f0b552',
+                      '#5fc490'
+                    ]
+                    return {
+                      borderColor: borderColors[tooltipItem.datasetIndex],
+                      backgroundColor: backgroundColors[tooltipItem.datasetIndex]
+                    }
+                  }
+                }
+              },
+
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    fontFamily: "Open Sans",
+                    fontColor: "#85808e",
+                    fontStyle: "normal",
+                    fontSize: "13",
+                    beginAtZero: false,
+                    maxTicksLimit: 6,
+                    padding: 12,
+                    callback: function(value) {
+                      var val = parseInt(value / 1000);
+                      return val > 0 ? val + 'k' : '';
+                    }
+                  },
+                  gridLines: {
+                    zeroLineColor: "#eaeaea",
+                    color: "#eaeaea",
+                    lineWidth: 1,
+                    //offsetGridLines: true,
+                    drawTicks: false,
+                    display: false
+                  }
+                }],
+                xAxes: [{
+                  gridLines: {
+                    zeroLineColor: "#eaeaea",
+                    color: "#eaeaea",
+                    lineWidth: 1,
+                    drawTicks: false,
+
+                    //offsetGridLines: true,
+                    //display: false
+                  },
+
+                  ticks: {
+                    fontFamily: "Open Sans",
+                    fontColor: "#85808e",
+                    fontSize: "13",
+                    padding: 12
+                  }
+                }]
+              },
+
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  usePointStyle: true,
+                  generateLabels: function(chart) {
+                    labels = Chart.defaults.global.legend.labels.generateLabels(chart);
+                    labels[0].fillStyle = '#f0b552';
+                    labels[1].fillStyle = '#5fc490';
+                    return labels;
+                  }
+                }
+              }
+            }
+          });
+
+
+
+
+          ///////////
+          //the pageview bar charts in infoboxes
+
+          $('canvas.info-chart').each(function() {
+
+            var ctx = this.getContext('2d');
+            var gradientbg = ctx.createLinearGradient(0, 0, 0, 50);
+            gradientbg.addColorStop(0, 'rgba(109, 187, 109, 0.25)');
+            gradientbg.addColorStop(1, 'rgba(109, 187, 109, 0.05)');
+
+            new Chart(ctx, {
+              data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                  /**
+                      {
+                        type: 'bar',
+                        data: $(this).data('values'),
+                        backgroundColor: '#94c080',
+                        hoverBackgroundColor: '#94c080',
+      
+                        borderColor: '#94c080',
+      
+                        borderWidth: 0,
+                        
+                        barThickness: 9
+                      },
+      
+                      {
+                        type: 'bar',
+                        data: [850, 550, 600, 700, 750, 800, 700, 900, 800, 900, 1100, 900],
+                        backgroundColor: '#eaedf3',
+                        hoverBackgroundColor: '#eaedf3',
+      
+                        borderColor: '#eaedf3',
+      
+                        borderWidth: 0,
+                        
+                        barThickness: 9
+                      },
+                      */
+
+                  {
+                    type: 'line',
+                    data: $(this).data('values'),
+                    backgroundColor: gradientbg,
+                    hoverBackgroundColor: '#70bcd9',
+                    fill: true,
+
+                    borderColor: 'rgba(109, 187, 109, 0.6)',
+
+                    borderWidth: 2.5,
+                    pointRadius: 7,
+                    lineTension: 0.4,
+
+                    pointBackgroundColor: 'transparent',
+                    pointBorderColor: 'transparent'
+                  },
+
+
+                ]
+              },
+
+              options: {
+
+                responsive: false,
+                animation: {
+                  duration: _animate ? 1000 : false
+                },
+
+                legend: {
+                  display: false
+                },
+                layout: {
+                  padding: {
+                    left: 10,
+                    right: 10,
+                    top: 0,
+                    bottom: -10
+                  }
+                },
+                scales: {
+                  yAxes: [{
+                    stacked: true,
+                    ticks: {
+                      display: false,
+                      beginAtZero: true,
+                    },
+                    gridLines: {
+                      display: false,
+                      drawBorder: false
+                    }
+                  }],
+
+                  xAxes: [{
+                    stacked: true,
+                    gridLines: {
+                      display: false,
+                      drawBorder: false
+                    },
+                    ticks: {
+                      display: false //this will remove only the label
+                    }
+                  }, ]
+                }, //scales
+
+                tooltips: {
+                  // Disable the on-canvas tooltip, because canvas area is small and tooltips will be cut (clipped)
+                  enabled: false,
+
+                  //use bootstrap tooltip instead
+                  custom: function(tooltipModel) {
+                    var title = '';
+                    var canvas = this._chart.canvas;
+
+                    if (tooltipModel.body) {
+                      title = tooltipModel.title[0] + ': ' + Number(tooltipModel.body[0].lines[0]).toLocaleString();
+                    }
+                    canvas.setAttribute('data-original-title', title); //will be used by bootstrap tooltip
+
+                    $(canvas)
+                      .tooltip({
+                        placement: 'bottom',
+                        template: '<div class="tooltip" role="tooltip"><div class="brc-info arrow"></div><div class="bgc-info tooltip-inner font-bolder text-110"></div></div>'
+                      })
+                      .tooltip('show')
+                      .on('hidden.bs.tooltip', function() {
+                        canvas.setAttribute('data-original-title', ''); //so that when mouse is back over canvas's blank area, no tooltip is shown
+                      });
+
+                  }
+                } //tooltips
+
+              }
+            });
+
+          });
+
+          //infobox's circular progress bar
+          $('canvas.info-pie, canvas.task-progress').each(function() {
+            var color = $(this).css('color');
+
+            new Chart(this.getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                datasets: [{
+                  data: [$(this).data('percent'), 100 - $(this).data('percent')],
+                  backgroundColor: [
+                    color,
+                    "#e3e5ea"
+                  ],
+                  hoverBackgroundColor: [
+                    color,
+                    "#e3e5ea"
+                  ],
+                  borderWidth: 0
+                }]
+              },
+
+              options: {
+                responsive: false,
+                cutoutPercentage: 80,
+                legend: {
+                  display: false
+                },
+                animation: {
+                  duration: _animate ? 500 : false,
+                  easing: 'easeInCubic'
+                },
+                tooltips: {
+                  enabled: false,
+                }
+              }
+            });
+
+          });
+
+
+
+
+          ////////
+
+          //Sortable task list
+          Sortable.create(document.getElementById('tasks'), {
+            draggable: ".task-item",
+            animation: 200,
+
+            ghostClass: "bgc-yellow-l1", // Class name for the drop placeholder
+            chosenClass: "", // Class name for the chosen item
+            dragClass: "", // Class name for the dragging item
+          });
+
+          //toggle tasks checkbox on/off
+          $('#tasks input[type=checkbox]').on('change', function() {
+            $(this).closest('#tasks > div').toggleClass('bgc-secondary-l3', this.checked).find('label').toggleClass('line-through text-grey-d2 text-grey-m2', this.checked);
+          });
+
+
+          /**
+          //style it?
+          [draggable="true"] {
+              border-style: dashed dashed dashed solid !important;
+              border-width: 2px 2px 2px 3px !important;
+          
+              border-t-color: #c1c7cf !important;
+              border-b-color: #c1c7cf !important;
+              border-r-color: #c1c7cf !important;
+          }
+          */
+#}
+        });
+      </script>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+              <h1 class="page-title text-primary-d2">
+                Bienvenido
+                <small class="page-info text-secondary-d2">
+                  <i class="fa fa-angle-double-right text-80"></i>
+                  {{ app.user.name }}
+                </small>
+              </h1>
+
+              {#<div class="page-tools">
+                <button type="button" class="btn btn-sm btn-lighter-default btn-h-lighter-purple btn-a-lighter-purple border-b-2">
+                  <i class="fa fa-save text-120 text-purple-m1"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-lighter-default btn-h-lighter-success btn-a-lighter-success border-b-2">
+                  <i class="fa fa-undo text-110 text-success-m1"></i>
+                </button>
+
+                <div class="btn-group dropdown dd-backdrop dd-backdrop-none-md">
+                  <button type="button" class="btn btn-sm btn-lighter-info btn-a-outline-info dropdown-toggle border-b-2" data-display="static" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-search text-110"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right dropdown-caret dropdown-animated animated-2 dd-slide-up dd-slide-none-md">
+                    <div class="dropdown-inner">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                  </div>
+                </div>
+              </div>#}
+            </div>
+            
+            <div class="h-1 my-1"></div>
+            
+            <div class="row">
+                
+            </div>
+
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="row">
+              <div class="col-lg-5 mt-4 mt-lg-0">
+                <div class="card border-0 h-100">
+                  <div class="card-header border-0 bgc-primary-d1 card-header-sm">
+                    <h6 class="card-title pt-0">
+                      <i class="mr-1 fa fa-signal text-white-tp2"></i>
+                      <span class="text-110 text-white">Contactos</span>
+                    </h6>                    
+                  </div>
+
+                  <div class="card-body px-0 bgc-white border-2 border-t-0 brc-primary-m4 pb-0 flex-grow-1 d-flex flex-column">
+                    <div class="flex-grow-1 d-flex align-items-center px-2">
+                      <canvas class="mw-100" id="piechart" height="110"></canvas>
+                    </div>
+                    <div>
+                      <br class="brc-default-l1 w-95 mt-3 mb-0" />
+                    </div>                    
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            {% endif %}
+
+            {#<hr class="brc-white my-15 d-none d-lg-block" />
+            <hr class="brc-white my-3 my-lg-4" />
+
+            <div class="row">
+              <div class="col-lg-5 order-last order-lg-first">
+                <div class="card border-0">
+                  <div class="card-header bg-transparent border-0 pl-1">
+                    <h5 class="card-title mb-2 mb-md-0 text-120">
+                      <i class="fa fa-star mr-1 text-warning text-90"></i>
+                      <span class="text-105">Popular Domains</span>
+                    </h5>
+
+                    <div class="card-toolbar align-self-center">
+                      <a href="#" data-action="toggle" class="card-toolbar-btn text-grey text-110"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body p-0 border-t-2 brc-default-l2">
+                    <table class="table brc-secondary-l4">
+                      <thead class="border-0">
+                        <tr class="border-0 bg-transparent text-dark-tp4 te1xt-95">
+                          <th class="border-0 font-normal">name</th>
+                          <th class="border-0 font-normal">price</th>
+                          <th class="border-0 font-normal">status</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr class="bgc-h-primary-l5">
+                          <td class="text-dark-m1">internet.com</td>
+                          <td>
+                            <small><s class="text-danger-m1">$29.99</s></small>
+                            <span class="text-success-m1 font-bolder">$19.99</span>
+                          </td>
+                          <td>
+                            <span class="badge text-75 badge-info arrowed-in arrowed-in-right">on sale</span>
+                          </td>
+                        </tr>
+                        <tr class="bgc-h-primary-l5">
+                          <td class="text-dark-m1">online.com</td>
+                          <td>
+                            <span class="text-blue-m1 font-bolder">$16.45</span>
+                          </td>
+                          <td>
+                            <span class="badge text-75 border-l-3 brc-black-tp8 bgc-success text-white">approved</span>
+                          </td>
+                        </tr>
+                        <tr class="bgc-h-primary-l5">
+                          <td class="text-dark-m1">newnet.com</td>
+                          <td>
+                            <span class="text-blue-m1 font-bolder">$15.00</span>
+                          </td>
+                          <td>
+                            <span class="badge text-75 border-l-3 brc-black-tp8 bgc-danger text-white">pending</span>
+                          </td>
+                        </tr>
+                        <tr class="bgc-h-primary-l5">
+                          <td class="text-dark-m1">web.com</td>
+                          <td>
+                            <small><s class="text-danger-m1">$24.99</s></small>
+                            <span class="text-success-m1 font-bolder">$19.95</span>
+                          </td>
+                          <td>
+                            <span class="badge bgc-secondary-l1 text-dark-tp4 border-1 brc-black-tp10"><s>out of stock</s></span>
+                          </td>
+                        </tr>
+                        <tr class="bgc-h-primary-l5">
+                          <td class="text-dark-m1">domain.com</td>
+                          <td>
+                            <span class="text-blue-m1 font-bolder">$12.00</span>
+                          </td>
+                          <td>
+                            <span class="badge text-75 border-l-3 brc-black-tp8 bgc-warning text-white">SOLD</span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-7 mb-4 mb-lg-0">
+                <div class="card border-0 h-100">
+                  <div class="card-header border-0 bg-transparent pl-1">
+                    <h5 class="card-title mb-2 mb-md-0 text-120">
+                      <i class="fas fa-chart-line text-purple-m2 mr-1 text-105"></i>
+                      <span class="text-110">Sale Stats</span>
+                    </h5>
+
+                    <div class="card-toolbar no-border dd-backdrop dd-backdrop-none-md">
+                      <a href="#" class="btn btn-xs btn-light-secondary border-1 text-600 px-4 radius-round dropdown-toggle" role="button" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+                        2020
+                      </a>
+
+                      <div class="dropdown-menu shadow-sm dropdown-menu-right dropdown-caret dropdown-animated dd-slide-center dd-slide-none-md radius-1 brc-secondary-l1 px-1 mw-auto">
+                        <div class="dropdown-inner">
+                          <a class="dropdown-item active" href="#">2020</a>
+                          <a class="dropdown-item" href="#">2019</a>
+                          <a class="dropdown-item" href="#">2018</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card-toolbar align-self-center">
+                      <a href="#" data-action="reload" class="card-toolbar-btn text-success-m2 text-100"><i class="fas fa-sync-alt"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body p-0 bg-white border-t-2 brc-default-l2 px-1 mx-n2 mx-md-0 h-100 d-flex align-items-center">
+                    <div class="mx-n2 px-0 mx-md-0 my-2 flex-grow-1">
+                      <canvas id="saleschart" height="115"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <hr class="border-dotted my-3 mt-lg-4 mb-lg-4" />
+
+            <div class="row">
+              <div class="col-12 col-lg-6">
+                <div class="card border-0">
+                  <div class="card-header bg-transparent border-b-1 brc-primary-m4 px-1 flex-column flex-md-row">
+                    <h5 class="card-title mb-2 mb-md-0">
+                      <i class="fa fa-rss text-orange mr-1 text-105"></i>
+                      <span class="text-105">Recent Activity</span>
+                    </h5>
+
+                    <div class="card-toolbar no-border tabs-above pl-0 pl-md-2">
+                      <ul class="nav nav-tabs card-header-tabs mr-0 flex-nowrap">
+                        <li class="nav-item">
+                          <a class="nav-link active radius-0" data-toggle="tab" href="#tab-1" role="tab">Tasks</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link radius-0" data-toggle="tab" href="#tab-2" role="tab">Members</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link radius-0" data-toggle="tab" href="#tab-3" role="tab">Comments</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="card-body bg-white p-0">
+                    <div class="tab-content border-0 card-inner px-0 py-3">
+                      <div class="tab-pane show active fade px-1" id="tab-1">
+                        <h5 class="font-light text-success mb-3">
+                          <i class="fa fa-list"></i>
+                          Sortable Lists <span class="text-75 text-grey-m2">drag &amp; drop</span>
+                        </h5>
+
+                        <div class="row">
+                          <div class="col-12 px-3" id="tasks">
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-purple-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Answering customer questions</span>
+                                </label>
+                              </div>
+
+
+                              <div class="py-1 align-self-center position-relative text-purple">
+                                <canvas class="task-progress" style="width:48px; height:48px;" data-percent=35></canvas>
+                                <span class="position-center text-85 text-600">35%</span>
+                              </div>
+
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-danger-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Fixing bugs</span>
+                                </label>
+                              </div>
+
+                              <div class="py-1">
+                                <div class="action-buttons">
+                                  <a class="text-primary-m1" href="#">
+                                    <i class="fa fa-search-plus"></i>
+                                  </a>
+
+                                  <a class="text-success-m1" href="#">
+                                    <i class="fa fa-pencil-alt"></i>
+                                  </a>
+
+                                  <a class="text-danger-m1" href="#">
+                                    <i class="fa fa-trash-alt"></i>
+                                  </a>
+                                </div>
+                              </div>
+
+
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-secondary-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Adding new features</span>
+                                </label>
+                              </div>
+
+
+
+                              <div class="py-1">
+                                <div class="dropdown">
+                                  <a class="btn btn-outline-primary border-b-2 btn-xs dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-cog"></i>
+                                  </a>
+                                  <div class="dropdown-menu mw-auto dropdown-caret dropdown-menu-right dropdown-animated animated-1">
+                                    <a class="dropdown-item" href="#" title="Mark as done" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                      <i class="fa fa-check text-success-m1 mx-1"></i>
+                                      <span class="d-md-none">Mark as done</span>
+                                    </a>
+                                    <a class="dropdown-item" href="#" title="Delete task" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                      <i class="fa fa-trash text-danger mx-1"></i>
+                                      <span class="d-md-none">Delete task</span>
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-info-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Upgrading scripts used in template</span>
+                                </label>
+                              </div>
+
+
+
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-grey-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Adding new skins</span>
+                                </label>
+                              </div>
+
+
+
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-success-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Updating server software up</span>
+                                </label>
+                              </div>
+
+
+
+
+                            </div>
+
+                            <div class="task-item mt-n1px border-1 bgc-h-success-l3 brc-secondary-l1 p-2 d-flex pos-rel">
+                              <div class="h-100 position-tl border-l-4 brc-warning-tp2 ml-n1px"></div>
+                              <div class="flex-grow-1 pt-2 pb-1">
+                                <label>
+                                  <input type="checkbox" class="align-middle input-sm mx-2px" autocomplete="off" />
+                                  <span class="align-middle">Cleaning up</span>
+                                </label>
+                              </div>
+
+
+
+
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="text-center px-1px pos-rel">
+                          <button type="button" class="mt-n1px btn btn-outline-info btn-sm btn-block border-b-2 radius-0">
+                            <i class="fa fa-plus mr-1"></i>
+                            Add A Task
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="tab-pane fade px-2" id="tab-2">
+                        <div class="row">
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <img src="assets/image/avatar/user.jpg" class="radius-round border-2 p-1px brc-primary-m2 w-6 h-6" />
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      Bob Doe
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> 20 min
+                                  </div>
+
+                                  <div>
+                                    <span class="badge btn-light-secondary">pending</span>
+                                    <div class="dropdown d-inline-block dd-backdrop dd-backdrop-none-md">
+                                      <button class="btn py-0 shadow-none btn-xs btn-outline-secondary border-0 dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-angle-down"></i>
+                                      </button>
+                                      <div class="dropdown-menu mw-auto dropdown-caret dropdown-menu-right dropdown-animated dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">
+                                          <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                            <i class="fa fa-check text-success-m1 mx-1 w-2"></i>
+                                            <span class="d-md-none">Approve</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                            <i class="fa fa-times text-orange mx-1 w-2"></i>
+                                            <span class="d-md-none">Reject</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                            <i class="fa fa-trash text-danger mx-1 w-2"></i>
+                                            <span class="d-md-none">Delete</span>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">161</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">24</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">12</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <span class="d-inline-flex align-items-center justify-content-center radius-round bgc-purple text-white font-bolder w-6 h-6">
+                                           <span>JS</span>
+                                  </span>
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      John Smith
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> 1 hour
+                                  </div>
+
+                                  <div>
+                                    <span class="badge btn-light-secondary">pending</span>
+                                    <div class="dropdown d-inline-block dd-backdrop dd-backdrop-none-md">
+                                      <button class="btn py-0 shadow-none btn-xs btn-outline-secondary border-0 dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-angle-down"></i>
+                                      </button>
+                                      <div class="dropdown-menu mw-auto dropdown-caret dropdown-menu-right dropdown-animated dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">
+                                          <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                            <i class="fa fa-check text-success-m1 mx-1 w-2"></i>
+                                            <span class="d-md-none">Approve</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                            <i class="fa fa-times text-orange mx-1 w-2"></i>
+                                            <span class="d-md-none">Reject</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                            <i class="fa fa-trash text-danger mx-1 w-2"></i>
+                                            <span class="d-md-none">Delete</span>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">25</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">57</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">21</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <img src="assets/image/avatar/avatar.png" class="radius-round border-2 p-1px brc-primary-m2 w-6 h-6" />
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      Jim Doe
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> 2 hour
+                                  </div>
+
+                                  <div>
+                                    <span class="badge btn-light-secondary">pending</span>
+                                    <div class="dropdown d-inline-block dd-backdrop dd-backdrop-none-md">
+                                      <button class="btn py-0 shadow-none btn-xs btn-outline-secondary border-0 dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-angle-down"></i>
+                                      </button>
+                                      <div class="dropdown-menu mw-auto dropdown-caret dropdown-menu-right dropdown-animated dd-slide-up dd-slide-none-md">
+                                        <div class="dropdown-inner">
+                                          <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                            <i class="fa fa-check text-success-m1 mx-1 w-2"></i>
+                                            <span class="d-md-none">Approve</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                            <i class="fa fa-times text-orange mx-1 w-2"></i>
+                                            <span class="d-md-none">Reject</span>
+                                          </a>
+                                          <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="top" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                            <i class="fa fa-trash text-danger mx-1 w-2"></i>
+                                            <span class="d-md-none">Delete</span>
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">197</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">33</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">50</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <img src="assets/image/avatar/avatar5.png" class="radius-round border-2 p-1px brc-primary-m2 w-6 h-6" />
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      Alex Doe
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> 3 hour
+                                  </div>
+
+                                  <div>
+                                    <span class="badge badge-danger badge-sm">blocked</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">21</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">53</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">33</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <span class="d-inline-flex align-items-center justify-content-center radius-round bgc-success text-white font-bolder w-6 h-6">
+                                           <span>BD</span>
+                                  </span>
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      Bob Doe
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> 6 hour
+                                  </div>
+
+                                  <div>
+                                    <span class="badge btn-light-success">approved</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">6</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">67</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">60</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-sm-6">
+                            <div class="d-block my-1 mx-n2 border-1 brc-secondary-l1 radius-1 p-0">
+                              <div class="d-flex p-2">
+                                <div class="pos-rel mr-3">
+                                  <img src="assets/image/avatar/avatar3.png" class="radius-round border-2 p-1px brc-primary-m2 w-6 h-6" />
+
+                                  <span class="bgc-warning radius-round border-2 brc-white p-1 position-tr"></span>
+                                </div>
+
+
+                                <div>
+                                  <div>
+                                    <a class="mt-0 text-blue-m1 text-90 font-bolder" href="#">
+                                      Susan
+                                    </a>
+                                  </div>
+
+                                  <div class="text-success-m2 text-80 font-bolder">
+                                    <i class="far fa-clock text-grey"></i> yesterday
+                                  </div>
+
+                                  <div>
+                                    <span class="badge btn-light-success">approved</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="w-100 mt-2">
+
+                                <div class="row mb-n1px mx-n1px text-secondary">
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 pb-0 text-center">
+                                      <i class="fab fa-twitter text-blue-m3"></i>
+                                      <span class="text-95">77</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1 border-x-0">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-instagram text-purple-m1"></i>
+                                      <span class="text-95">13</span>
+                                    </div>
+                                  </div>
+                                  <div class="col-4 card radius-0 brc-secondary-l1">
+                                    <div class="card-body px-1 py-2 text-center">
+                                      <i class="fab fa-facebook text-primary-m2"></i>
+                                      <span class="text-95">13</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <hr class="border-double" />
+                        <div class="text-center">
+                          <button type="button" class="btn btn-outline-info btn-sm btn-wide">
+                            See All Members
+                            <i class="fa fa-arrow-right"></i>
+                          </button>
+                        </div>
+
+                      </div>
+
+                      <div class="tab-pane fade px-0" id="tab-3">
+                        <div ace-scroll='{"height": 280, "smooth":true}'>
+                          <div class="media mx-15">
+                            <div class="d-flex flex-grow-1">
+                              <div class="mr-3">
+                                <img src="assets/image/avatar/avatar.png" class="radius-round border-2 p-1px brc-primary-m3 w-6 h-6" />
+                              </div>
+
+                              <div class="media-body pb-2 border-b-1 brc-default-l2">
+                                <div class="d-flex justify-content-between">
+                                  <span class="text-blue text-95">Bob Doe</span>
+                                  <span class="text-90">
+                                               <i class="far fa-clock text-grey mr-1"></i><span class="text-success-m2 font-bolder">6 min</span>
+                                  </span>
+                                </div>
+                                <div class="text-dark-m3 text-90">
+                                  <i class="fa fa-quote-left text-90 text-secondary-m1 mr-1"></i>
+                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media mx-15">
+                            <div class="d-flex flex-grow-1">
+                              <div class="mr-3">
+                                <img src="assets/image/avatar/avatar1.png" class="radius-round border-2 p-1px brc-primary-m3 w-6 h-6" />
+                              </div>
+
+                              <div class="media-body pb-2 border-b-1 brc-default-l2">
+                                <div class="d-flex justify-content-between">
+                                  <span class="text-blue text-95">Jennifer</span>
+                                  <span class="text-90">
+                                               <i class="far fa-clock text-grey mr-1"></i><span class="text-blue-m2 font-bolder">15 min</span>
+                                  </span>
+                                </div>
+                                <div class="text-dark-m3 text-90">
+                                  <i class="fa fa-quote-left text-90 text-secondary-m1 mr-1"></i>
+                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media mx-15">
+                            <div class="d-flex flex-grow-1">
+                              <div class="mr-3">
+                                <span class="d-inline-flex align-items-center justify-content-center radius-round bgc-purple text-white font-bolder w-6 h-6">
+                                           <span>JM</span>
+                                </span>
+                              </div>
+
+                              <div class="media-body pb-2 border-b-1 brc-default-l2">
+                                <div class="d-flex justify-content-between">
+                                  <span class="text-blue text-95">Joe Smith</span>
+                                  <span class="text-90">
+                                               <i class="far fa-clock text-grey mr-1"></i><span class="text-orange -m2 font-bolder">22 min</span>
+                                  </span>
+                                </div>
+                                <div class="text-dark-m3 text-90">
+                                  <i class="fa fa-quote-left text-90 text-secondary-m1 mr-1"></i>
+                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media mx-15">
+                            <div class="d-flex flex-grow-1">
+                              <div class="mr-3">
+                                <img src="assets/image/avatar/avatar3.png" class="radius-round border-2 p-1px brc-primary-m3 w-6 h-6" />
+                              </div>
+
+                              <div class="media-body pb-2 border-b-1 brc-default-l2">
+                                <div class="d-flex justify-content-between">
+                                  <span class="text-blue text-95">Rita</span>
+                                  <span class="text-90">
+                                               <i class="far fa-clock text-grey mr-1"></i><span class="text-danger-m2 font-bolder">50 min</span>
+                                  </span>
+                                </div>
+                                <div class="text-dark-m3 text-90">
+                                  <i class="fa fa-quote-left text-90 text-secondary-m1 mr-1"></i>
+                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <hr class="border-double" />
+                        <div class="text-center">
+                          <button type="button" class="btn btn-outline-info btn-sm btn-wide">
+                            See All Comments
+                            <i class="fa fa-arrow-right"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div><!-- /.card-body -->
+
+                </div>
+              </div>
+
+
+
+              <div class="col-12 col-lg-6">
+                <div class="card border-0 mt-3">
+
+                  <div class="card-header bgc-blue-tp1">
+                    <h6 class="card-title text-white font-normal">
+                      <i class="far fa-comment-dots text-130 mr-1"></i>
+                      <span class="text-110">Conversation</span>
+                      <span class="text-95 d-block d-sm-inline text-center">(6 online)</span>
+                    </h6>
+
+                    <div class="card-toolbar align-self-center text-white text-90 no-border p-2px">
+                      Alexa is typing
+                      <div class="typing-dots text-160 text-white mx-md-1">
+                        <span class="typing-dot">.</span>
+                        <span class="typing-dot">.</span>
+                        <span class="typing-dot">.</span>
+                      </div>
+                    </div>
+                    <div class="card-toolbar align-self-center">
+                      <a href="#" data-action="reload" class="card-toolbar-btn text-white "><i class="fas fa-sync-alt"></i></a>
+                    </div>
+                  </div>
+
+                  <div class="card-body border-x-1 border-b-1 brc-blue-l1 bgc-default-l4 px-1px py-0" ace-scroll='{"height": 450, "smooth":true}'>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <img src="assets/image/avatar/avatar1.png" class="radius-round border-2 p-1px brc-primary-m1 w-6 h-6" />
+
+                            <span class="bgc-success-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">Alexa</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-success-m1 font-bolder">4 sec</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis.
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <img src="assets/image/avatar/avatar.png" class="radius-round border-2 p-1px brc-primary-m1 w-6 h-6" />
+
+                            <span class="bgc-success-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">John</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-blue-m1 font-bolder">38 sec</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              <span class='fa-stack w-auto'> <i class='fas fa-circle text-dark fa-stack-1x text-100'></i> <i class='fas fa-smile-beam text-warning-m3 text-125 fa-stack-1x pos-rel'></i> </span> Raw denim you probably haven't heard of them jean shorts Austin.
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <span class="d-inline-flex align-items-center justify-content-center radius-round bgc-warning text-white font-bolder w-6 h-6">
+                                <span>BD</span>
+                            </span>
+
+                            <span class="bgc-warning-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">Bob Doe</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-orange-m1 font-bolder">2 min</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo massa sed ipsum porttitor facilisis.
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <img src="assets/image/avatar/avatar4.png" class="radius-round border-2 p-1px brc-primary-m1 w-6 h-6" />
+
+                            <span class="bgc-info-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">Jim</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-grey-m1 font-bolder">3 min</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              Raw denim you probably haven't heard of them jean shorts Austin.
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <img src="assets/image/avatar/avatar1.png" class="radius-round border-2 p-1px brc-primary-m1 w-6 h-6" />
+
+                            <span class="bgc-secondary-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">Alexa</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-success-m1 font-bolder">4 min</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              Lorem ipsum dolor sit amet. <span class='fa-stack w-auto'> <i class='fas fa-circle text-dark fa-stack-1x text-100'></i> <i class='fas fa-grin-alt text-warning-m3 text-125 fa-stack-1x pos-rel'></i> </span>
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                    <div class="px-3">
+                      <div class="media mt-2 mb-3">
+                        <div class="d-flex flex-grow-1">
+                          <div class="mr-3 align-self-start align-self-sm-center mt-2 mt-sm-0 pos-rel">
+                            <span class="d-inline-flex align-items-center justify-content-center radius-round bgc-purple text-white font-bolder w-6 h-6">
+                                <span>GG</span>
+                            </span>
+
+                            <span class="bgc-grey-tp2 radius-round border-2 brc-white p-1 position-tr"></span>
+
+
+                            <div class="dropdown d-inline-block  position-br mb-n3">
+                              <button class="shadow-none btn btn-xs btn-outline-secondary btn-h-outline-yellow  btn-a-yellow border-0 py-0 px-1 action-btn dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu mw-auto dropdown-menu-right">
+                                <a class="dropdown-item" href="#" title="Approve" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-success"></div><div class="tooltip-inner text-110 pb-2 bgc-success"></div></div>'>
+                                  <i class="fa fa-check text-success mx-1"></i>
+                                  <span class="d-md-none">Approve</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Reject" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-warning"></div><div class="tooltip-inner text-110 pb-2 bgc-warning"></div></div>'>
+                                  <i class="fa fa-times text-orange mx-1"></i>
+                                  <span class="d-md-none">Reject</span>
+                                </a>
+                                <a class="dropdown-item" href="#" title="Delete" data-toggle="tooltip" data-placement="left" data-template='<div class="tooltip" role="tooltip"><div class="arrow brc-danger"></div><div class="tooltip-inner text-110 pb-2 bgc-danger"></div></div>'>
+                                  <i class="fa fa-trash text-danger mx-1"></i>
+                                  <span class="d-md-none">Delete</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="media-body py-2 px-3 radius-r-1 flex-grow-1 bgc-white brc-default-l2 border-1 border-l-0 pos-rel">
+                            <div class="position-tl h-102 border-l-2 brc-blue-m3 mt-n1px"></div>
+                            <div class="d-flex justify-content-between">
+                              <span class="text-info-d2 text-600 text-95">Gary</span>
+                              <span class="text-90">
+                                    <i class="far fa-clock text-grey mr-1"></i><span class="text-purple-m1 font-bolder">5 min</span>
+                              </span>
+                            </div>
+                            <div class="text-dark-m2 text-90">
+                              Quisque commodo massa sed ipsum porttitor facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </div>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-footer p-0 bgc-white border-1 border-t-0 brc-blue-l1 pos-rel" style="box-shadow: 0 -1px 2px 0px rgba(221, 223, 228, 0.45);">
+                    <div class="p-3">
+                      <div class="input-group">
+                        <input type="text" class="form-control form-control-lg radius-l-round brc-blue-m4" placeholder="Type something ..." />
+                        <div class="input-group-append">
+                          <button class="btn btn-blue btn-md radius-r-round px-4" type="button"><i class="fas fa-forward"></i></button>
+                        </div>
+
+                        <div class="btn-group ml-2 dropup">
+                          <button type="button" class="btn btn-xs px-1 border-0 btn-lighter-warning btn-bgc-tp dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="fa-stack">
+                                    <i class="fas fa-circle text-grey-l1 fa-stack-1x text-160"></i>
+                                    <i class="fas fa-circle text-dark fa-stack-1x text-120"></i>                                    
+                                    <i class="fas fa-smile text-warning-m3 text-150 fa-stack-1x"></i>
+                                </span>
+                          </button>
+
+                          <div class="dropdown-menu dropdown-menu-right p-1">
+                            <div class="d-flex ">
+                              <a class="dropdown-item px-25" href="#">
+                                <span class="fa-stack w-auto">
+                                            <i class="fas fa-circle text-dark fa-stack-1x text-100"></i>
+                                            <i class="fas fa-smile text-warning-m3 text-125 fa-stack-1x pos-rel"></i>
+                                        </span>
+                              </a>
+
+                              <a class="dropdown-item px-25" href="#">
+                                <span class="fa-stack w-auto">
+                                            <i class="fas fa-circle text-dark fa-stack-1x text-100"></i>
+                                            <i class="fas fa-smile-beam text-warning-m3 text-125 fa-stack-1x pos-rel"></i>
+                                        </span>
+                              </a>
+
+                              <a class="dropdown-item px-25" href="#">
+                                <span class="fa-stack w-auto">
+                                            <i class="fas fa-circle text-dark fa-stack-1x text-100"></i>
+                                            <i class="fas fa-smile-wink text-warning-m3 text-125 fa-stack-1x pos-rel"></i>
+                                        </span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>#}
+{% endblock %}
